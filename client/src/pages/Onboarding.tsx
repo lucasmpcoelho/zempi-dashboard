@@ -8,8 +8,9 @@ import WelcomeScreen from "@/components/WelcomeScreen";
 import SuccessScreen from "@/components/SuccessScreen";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Pill, Heart, Utensils, Activity } from "lucide-react";
+import { Pill, Heart, Utensils, Activity, ArrowLeft, Target, Calendar } from "lucide-react";
 
 interface OnboardingData {
   name: string;
@@ -17,9 +18,11 @@ interface OnboardingData {
   medication: string;
   height: string;
   weight: string;
+  targetWeight: string;
+  treatmentStartDate: string;
   dose: string;
   bodyType: string;
-  foodRestrictions: string[];
+  foodPreferences: string[];
   comorbidities: string[];
   privacyConsent: boolean;
 }
@@ -33,14 +36,49 @@ const medications = [
 ];
 
 const bodyTypes = [
-  { value: "Magro", label: "Magro" },
-  { value: "Atlético", label: "Atlético" },
-  { value: "Arredondado", label: "Arredondado" },
-  { value: "Não sei", label: "Não sei" },
+  { 
+    value: "Ectomorfo", 
+    label: "Ectomorfo", 
+    description: "Corpo naturalmente magro, metabolismo acelerado" 
+  },
+  { 
+    value: "Mesomorfo", 
+    label: "Mesomorfo", 
+    description: "Estrutura atlética, facilidade para ganhar músculo" 
+  },
+  { 
+    value: "Endomorfo", 
+    label: "Endomorfo", 
+    description: "Corpo arredondado, metabolismo mais lento" 
+  },
+  { 
+    value: "Não sei", 
+    label: "Não sei", 
+    description: "Deixe a IA ajudar a identificar" 
+  },
 ];
 
-const foodRestrictionOptions = ["Vegano", "Vegetariano", "Sem Lactose", "Sem Glúten", "Nenhuma"];
-const comorbidityOptions = ["Hipertensão", "Diabetes Tipo 2", "Apneia do Sono", "Colesterol Alto", "Nenhuma"];
+const foodPreferenceOptions = [
+  "Low-carb (pouco carboidrato)",
+  "Equilibrado",
+  "Flexível",
+  "Vegano",
+  "Vegetariano",
+  "Sem Lactose",
+  "Sem Glúten",
+];
+
+const comorbidityOptions = [
+  "Hipertensão",
+  "DM2 (Diabetes Tipo 2)",
+  "Dislipidemia",
+  "DRGE (Refluxo)",
+  "Pancreatite prévia",
+  "Colelitíase",
+  "Apneia do Sono",
+  "Não sei",
+  "Nenhuma",
+];
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -56,14 +94,16 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     medication: "",
     height: "",
     weight: "",
+    targetWeight: "",
+    treatmentStartDate: "",
     dose: "",
     bodyType: "",
-    foodRestrictions: [],
+    foodPreferences: [],
     comorbidities: [],
     privacyConsent: false,
   });
 
-  const [messages, setMessages] = useState<Array<{ text: string; isBot: boolean }>>([]);
+  const [messages, setMessages] = useState<Array<{ text: string; isBot: boolean; hint?: string }>>([]);
   const [showOptions, setShowOptions] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -76,7 +116,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   }, [messages, showOptions]);
 
   useEffect(() => {
-    if (step > 0 && step <= 10) {
+    if (step > 0 && step <= 13) {
       addBotMessage();
     }
   }, [step]);
@@ -85,25 +125,67 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     setShowOptions(false);
     
     setTimeout(() => {
-      const botMessages: Record<number, string> = {
-        1: "Olá! Eu sou a Zempi AI 👋 Vamos começar! Como você se chama?",
-        2: "Prazer em conhecer você! 😊 Qual é a sua data de nascimento?",
-        3: "Perfeito! Qual medicamento GLP-1 você está usando? 💊",
-        4: "Ótimo! Agora me conta, qual é a sua altura? 📏",
-        5: "Legal! E qual é o seu peso atual? ⚖️",
-        6: "Estamos quase lá! Qual é a dose que você está tomando? 💉",
-        7: "Como você descreveria seu tipo corporal? 💪",
-        8: "Você tem alguma restrição alimentar? 🥗",
-        9: "Você tem alguma condição de saúde que devemos saber? ❤️",
-        10: "Última etapa! Precisamos do seu consentimento para cuidar de você com segurança 🔒",
+      const botMessages: Record<number, { text: string; hint?: string }> = {
+        1: { 
+          text: "Olá! Eu sou a Zempi AI 👋 Vamos começar! Como você se chama?" 
+        },
+        2: { 
+          text: "Prazer em conhecer você! 😊 Qual é a sua data de nascimento?",
+          hint: "Isso nos ajuda a personalizar suas recomendações por faixa etária"
+        },
+        3: { 
+          text: "Perfeito! Qual medicamento GLP-1 você está usando? 💊",
+          hint: "Cada medicamento tem protocolos específicos que vamos acompanhar"
+        },
+        4: { 
+          text: "Ótimo! Agora me conta, qual é a sua altura? 📏" 
+        },
+        5: { 
+          text: "Legal! E qual é o seu peso atual? ⚖️" 
+        },
+        6: { 
+          text: "Qual é o seu peso alvo? 🎯",
+          hint: "Vamos criar um plano gradual e saudável para alcançar seu objetivo"
+        },
+        7: { 
+          text: "Quando você começou o tratamento? 📅",
+          hint: "Isso nos ajuda a entender em que fase você está e ajustar as orientações"
+        },
+        8: { 
+          text: "Estamos quase lá! Qual é a dose que você está tomando? 💉" 
+        },
+        9: { 
+          text: "Como você descreveria seu tipo corporal? 💪",
+          hint: "Seu biotipo influencia como seu corpo responde ao tratamento e quais exercícios são mais eficazes"
+        },
+        10: { 
+          text: "Qual é a sua preferência alimentar? 🥗",
+          hint: "Vamos sugerir receitas e planos que se encaixem no seu estilo"
+        },
+        11: { 
+          text: "Você tem alguma condição de saúde que devemos saber? ❤️",
+          hint: "Isso garante que todas as recomendações sejam seguras para você"
+        },
+        12: { 
+          text: "Última etapa! Precisamos do seu consentimento para cuidar de você com segurança 🔒" 
+        },
       };
 
-      setMessages((prev) => [...prev, { text: botMessages[step], isBot: true }]);
+      const messageData = botMessages[step];
+      setMessages((prev) => [...prev, { text: messageData.text, isBot: true, hint: messageData.hint }]);
       
       setTimeout(() => {
         setShowOptions(true);
       }, 400);
     }, 300);
+  };
+
+  const handleBack = () => {
+    if (step > 1) {
+      // Remove last 2 messages (user answer and bot question)
+      setMessages((prev) => prev.slice(0, -2));
+      setStep(step - 1);
+    }
   };
 
   const handleOptionSelect = (value: string, field: keyof OnboardingData) => {
@@ -123,7 +205,13 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     let displayValue = value;
     if (field === "height") displayValue = `${value} cm`;
     if (field === "weight") displayValue = `${value} kg`;
+    if (field === "targetWeight") displayValue = `${value} kg`;
     if (field === "dose") displayValue = `${value} mg`;
+    if (field === "dateOfBirth" || field === "treatmentStartDate") {
+      // Convert YYYY-MM-DD to DD/MM/YYYY
+      const [year, month, day] = value.split("-");
+      displayValue = `${day}/${month}/${year}`;
+    }
     
     setMessages((prev) => [...prev, { text: displayValue, isBot: false }]);
     
@@ -134,7 +222,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     }, 600);
   };
 
-  const handleMultiSelect = (field: "foodRestrictions" | "comorbidities") => {
+  const handleMultiSelect = (field: "foodPreferences" | "comorbidities") => {
     const selectedItems = data[field];
     const displayText = selectedItems.length > 0 ? selectedItems.join(", ") : "Nenhuma";
     setMessages((prev) => [...prev, { text: displayText, isBot: false }]);
@@ -159,14 +247,14 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       title: "Dados salvos com sucesso! 🎉",
       description: "Suas informações foram registradas de forma segura.",
     });
-    setStep(11);
+    setStep(13);
   };
 
   if (step === 0) {
     return <WelcomeScreen onStart={() => setStep(1)} />;
   }
 
-  if (step === 11) {
+  if (step === 13) {
     return (
       <SuccessScreen
         onContinueToDashboard={onComplete}
@@ -183,10 +271,20 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b p-4">
         <div className="max-w-2xl mx-auto flex items-center gap-3">
           <BotAvatar size="sm" />
-          <div>
+          <div className="flex-1">
             <p className="font-semibold">Zempi AI</p>
             <p className="text-xs text-muted-foreground">online</p>
           </div>
+          {step > 1 && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleBack}
+              data-testid="button-back"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          )}
         </div>
       </div>
 
@@ -194,7 +292,19 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         <div className="max-w-2xl mx-auto px-4 py-6">
           <div className="space-y-4">
             {messages.map((msg, index) => (
-              <ChatMessage key={index} message={msg.text} isBot={msg.isBot} />
+              <div key={index}>
+                <ChatMessage message={msg.text} isBot={msg.isBot} />
+                {msg.isBot && msg.hint && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-xs text-muted-foreground mt-1 ml-2"
+                  >
+                    💡 {msg.hint}
+                  </motion.p>
+                )}
+              </div>
             ))}
 
             <AnimatePresence>
@@ -213,11 +323,14 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   )}
 
                   {step === 2 && (
-                    <ChatInput
-                      type="date"
-                      onSubmit={(value) => handleInputSubmit(value, "dateOfBirth")}
-                      placeholder="dd/mm/aaaa"
-                    />
+                    <div className="space-y-2">
+                      <ChatInput
+                        type="date"
+                        onSubmit={(value) => handleInputSubmit(value, "dateOfBirth")}
+                        placeholder="dd/mm/aaaa"
+                      />
+                      <p className="text-xs text-muted-foreground ml-2">Formato: dia/mês/ano</p>
+                    </div>
                   )}
 
                   {step === 3 && (
@@ -254,53 +367,89 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   {step === 6 && (
                     <ChatInput
                       type="number"
+                      onSubmit={(value) => handleInputSubmit(value, "targetWeight")}
+                      placeholder="Peso alvo em kg (ex: 65)"
+                    />
+                  )}
+
+                  {step === 7 && (
+                    <div className="space-y-2">
+                      <ChatInput
+                        type="date"
+                        onSubmit={(value) => handleInputSubmit(value, "treatmentStartDate")}
+                        placeholder="dd/mm/aaaa"
+                      />
+                      <p className="text-xs text-muted-foreground ml-2">Data de início do tratamento</p>
+                    </div>
+                  )}
+
+                  {step === 8 && (
+                    <ChatInput
+                      type="number"
                       onSubmit={(value) => handleInputSubmit(value, "dose")}
                       placeholder="Dose em mg (ex: 0.5)"
                     />
                   )}
 
-                  {step === 7 && (
+                  {step === 9 && (
                     <>
                       {bodyTypes.map((type, index) => (
-                        <ChatOption
+                        <motion.button
                           key={type.value}
-                          label={type.label}
-                          selected={data.bodyType === type.value}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.05 }}
                           onClick={() => handleOptionSelect(type.value, "bodyType")}
-                          delay={index * 0.05}
-                          icon={<Activity className="h-5 w-5" />}
-                        />
+                          className={`
+                            w-full p-4 rounded-xl border-2 text-left transition-all
+                            hover-elevate active-elevate-2
+                            ${
+                              data.bodyType === type.value
+                                ? "border-primary bg-primary/5"
+                                : "border-border bg-background"
+                            }
+                          `}
+                          data-testid={`option-${type.value.toLowerCase().replace(/\s+/g, '-')}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <Activity className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                              <p className="font-medium">{type.label}</p>
+                              <p className="text-sm text-muted-foreground mt-1">{type.description}</p>
+                            </div>
+                          </div>
+                        </motion.button>
                       ))}
                     </>
                   )}
 
-                  {step === 8 && (
+                  {step === 10 && (
                     <>
                       <div className="space-y-3">
-                        {foodRestrictionOptions.map((restriction) => (
+                        {foodPreferenceOptions.map((preference) => (
                           <motion.div
-                            key={restriction}
+                            key={preference}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             className="flex items-center space-x-3 p-4 rounded-xl border hover-elevate cursor-pointer"
                             onClick={() =>
-                              setData({ ...data, foodRestrictions: toggleArrayItem(data.foodRestrictions, restriction) })
+                              setData({ ...data, foodPreferences: toggleArrayItem(data.foodPreferences, preference) })
                             }
-                            data-testid={`option-restriction-${restriction.toLowerCase()}`}
+                            data-testid={`option-preference-${preference.toLowerCase().replace(/\s+/g, '-')}`}
                           >
                             <Checkbox
-                              id={restriction}
-                              checked={data.foodRestrictions.includes(restriction)}
+                              id={preference}
+                              checked={data.foodPreferences.includes(preference)}
                               onCheckedChange={() =>
                                 setData({
                                   ...data,
-                                  foodRestrictions: toggleArrayItem(data.foodRestrictions, restriction),
+                                  foodPreferences: toggleArrayItem(data.foodPreferences, preference),
                                 })
                               }
                             />
-                            <Label htmlFor={restriction} className="flex-1 cursor-pointer font-medium flex items-center gap-2">
+                            <Label htmlFor={preference} className="flex-1 cursor-pointer font-medium flex items-center gap-2">
                               <Utensils className="h-4 w-4 text-primary" />
-                              {restriction}
+                              {preference}
                             </Label>
                           </motion.div>
                         ))}
@@ -309,16 +458,16 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
-                        onClick={() => handleMultiSelect("foodRestrictions")}
+                        onClick={() => handleMultiSelect("foodPreferences")}
                         className="w-full p-4 rounded-xl bg-primary text-primary-foreground font-medium hover-elevate active-elevate-2"
-                        data-testid="button-continue-restrictions"
+                        data-testid="button-continue-preferences"
                       >
                         Continuar
                       </motion.button>
                     </>
                   )}
 
-                  {step === 9 && (
+                  {step === 11 && (
                     <>
                       <div className="space-y-3">
                         {comorbidityOptions.map((condition) => (
@@ -330,7 +479,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                             onClick={() =>
                               setData({ ...data, comorbidities: toggleArrayItem(data.comorbidities, condition) })
                             }
-                            data-testid={`option-comorbidity-${condition.toLowerCase()}`}
+                            data-testid={`option-comorbidity-${condition.toLowerCase().replace(/\s+/g, '-')}`}
                           >
                             <Checkbox
                               id={condition}
@@ -359,7 +508,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     </>
                   )}
 
-                  {step === 10 && (
+                  {step === 12 && (
                     <div className="space-y-4">
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
