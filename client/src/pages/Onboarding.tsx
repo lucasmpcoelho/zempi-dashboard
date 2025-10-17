@@ -129,7 +129,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     setTimeout(() => {
       const botMessages: Record<number, { text: string; hint?: string }> = {
         1: { 
-          text: "Olá! Eu sou a Zempi AI 👋 Vamos começar! Como você se chama?" 
+          text: "Olá! Eu sou a Zempi 🌱 Vamos começar! Como você se chama?" 
         },
         2: { 
           text: "Prazer em conhecer você! 😊 Qual é a sua data de nascimento?",
@@ -280,7 +280,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         <div className="max-w-2xl mx-auto flex items-center gap-3">
           <BotAvatar size="sm" />
           <div className="flex-1">
-            <p className="font-semibold">Zempi AI</p>
+            <p className="font-semibold">Zempi 🌱</p>
             <p className="text-xs text-muted-foreground">online</p>
           </div>
           {step > 1 && (
