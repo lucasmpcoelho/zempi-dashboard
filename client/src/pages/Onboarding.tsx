@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ChatMessage from "@/components/ChatMessage";
 import ChatOption from "@/components/ChatOption";
 import ChatInput from "@/components/ChatInput";
+import DateInput from "@/components/DateInput";
 import BotAvatar from "@/components/BotAvatar";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import SuccessScreen from "@/components/SuccessScreen";
@@ -10,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Pill, Heart, Utensils, Activity, ArrowLeft, Target, Calendar } from "lucide-react";
+import { Pill, Heart, Utensils, Activity, ArrowLeft } from "lucide-react";
 
 interface OnboardingData {
   name: string;
@@ -59,7 +60,8 @@ const bodyTypes = [
 ];
 
 const foodPreferenceOptions = [
-  "Low-carb (pouco carboidrato)",
+  "Como de tudo",
+  "Low-carb",
   "Equilibrado",
   "Flexível",
   "Vegano",
@@ -70,9 +72,9 @@ const foodPreferenceOptions = [
 
 const comorbidityOptions = [
   "Hipertensão",
-  "DM2 (Diabetes Tipo 2)",
+  "DM2",
   "Dislipidemia",
-  "DRGE (Refluxo)",
+  "DRGE",
   "Pancreatite prévia",
   "Colelitíase",
   "Apneia do Sono",
@@ -116,7 +118,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   }, [messages, showOptions]);
 
   useEffect(() => {
-    if (step > 0 && step <= 13) {
+    if (step > 0 && step <= 12) {
       addBotMessage();
     }
   }, [step]);
@@ -182,9 +184,15 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
   const handleBack = () => {
     if (step > 1) {
-      // Remove last 2 messages (user answer and bot question)
-      setMessages((prev) => prev.slice(0, -2));
-      setStep(step - 1);
+      setShowOptions(false);
+      setIsTransitioning(true);
+      
+      setTimeout(() => {
+        // Remove last 2 messages (bot question + user answer)
+        setMessages((prev) => prev.slice(0, -2));
+        setStep(step - 1);
+        setIsTransitioning(false);
+      }, 200);
     }
   };
 
@@ -313,7 +321,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="space-y-3 pt-2"
+                  className="space-y-2 pt-2"
                 >
                   {step === 1 && (
                     <ChatInput
@@ -323,14 +331,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   )}
 
                   {step === 2 && (
-                    <div className="space-y-2">
-                      <ChatInput
-                        type="date"
-                        onSubmit={(value) => handleInputSubmit(value, "dateOfBirth")}
-                        placeholder="dd/mm/aaaa"
-                      />
-                      <p className="text-xs text-muted-foreground ml-2">Formato: dia/mês/ano</p>
-                    </div>
+                    <DateInput
+                      onSubmit={(value) => handleInputSubmit(value, "dateOfBirth")}
+                      placeholder="DD/MM/AAAA"
+                    />
                   )}
 
                   {step === 3 && (
@@ -341,8 +345,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                           label={med.label}
                           selected={data.medication === med.value}
                           onClick={() => handleOptionSelect(med.value, "medication")}
-                          delay={index * 0.05}
-                          icon={<Pill className="h-5 w-5" />}
+                          delay={index * 0.04}
+                          icon={<Pill className="h-4 w-4" />}
                         />
                       ))}
                     </>
@@ -373,14 +377,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   )}
 
                   {step === 7 && (
-                    <div className="space-y-2">
-                      <ChatInput
-                        type="date"
-                        onSubmit={(value) => handleInputSubmit(value, "treatmentStartDate")}
-                        placeholder="dd/mm/aaaa"
-                      />
-                      <p className="text-xs text-muted-foreground ml-2">Data de início do tratamento</p>
-                    </div>
+                    <DateInput
+                      onSubmit={(value) => handleInputSubmit(value, "treatmentStartDate")}
+                      placeholder="DD/MM/AAAA"
+                    />
                   )}
 
                   {step === 8 && (
@@ -394,44 +394,29 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   {step === 9 && (
                     <>
                       {bodyTypes.map((type, index) => (
-                        <motion.button
+                        <ChatOption
                           key={type.value}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.05 }}
+                          label={type.label}
+                          description={type.description}
+                          selected={data.bodyType === type.value}
                           onClick={() => handleOptionSelect(type.value, "bodyType")}
-                          className={`
-                            w-full p-4 rounded-xl border-2 text-left transition-all
-                            hover-elevate active-elevate-2
-                            ${
-                              data.bodyType === type.value
-                                ? "border-primary bg-primary/5"
-                                : "border-border bg-background"
-                            }
-                          `}
-                          data-testid={`option-${type.value.toLowerCase().replace(/\s+/g, '-')}`}
-                        >
-                          <div className="flex items-start gap-3">
-                            <Activity className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                            <div className="flex-1">
-                              <p className="font-medium">{type.label}</p>
-                              <p className="text-sm text-muted-foreground mt-1">{type.description}</p>
-                            </div>
-                          </div>
-                        </motion.button>
+                          delay={index * 0.04}
+                          icon={<Activity className="h-4 w-4" />}
+                        />
                       ))}
                     </>
                   )}
 
                   {step === 10 && (
                     <>
-                      <div className="space-y-3">
-                        {foodPreferenceOptions.map((preference) => (
+                      <div className="space-y-2">
+                        {foodPreferenceOptions.map((preference, index) => (
                           <motion.div
                             key={preference}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="flex items-center space-x-3 p-4 rounded-xl border hover-elevate cursor-pointer"
+                            transition={{ delay: index * 0.03 }}
+                            className="flex items-center space-x-2 px-3 py-2 rounded-lg border hover-elevate cursor-pointer"
                             onClick={() =>
                               setData({ ...data, foodPreferences: toggleArrayItem(data.foodPreferences, preference) })
                             }
@@ -447,8 +432,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                                 })
                               }
                             />
-                            <Label htmlFor={preference} className="flex-1 cursor-pointer font-medium flex items-center gap-2">
-                              <Utensils className="h-4 w-4 text-primary" />
+                            <Label htmlFor={preference} className="flex-1 cursor-pointer text-sm flex items-center gap-2">
+                              <Utensils className="h-3.5 w-3.5 text-primary" />
                               {preference}
                             </Label>
                           </motion.div>
@@ -459,7 +444,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
                         onClick={() => handleMultiSelect("foodPreferences")}
-                        className="w-full p-4 rounded-xl bg-primary text-primary-foreground font-medium hover-elevate active-elevate-2"
+                        className="w-full py-3 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover-elevate active-elevate-2"
                         data-testid="button-continue-preferences"
                       >
                         Continuar
@@ -469,13 +454,14 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
                   {step === 11 && (
                     <>
-                      <div className="space-y-3">
-                        {comorbidityOptions.map((condition) => (
+                      <div className="space-y-2">
+                        {comorbidityOptions.map((condition, index) => (
                           <motion.div
                             key={condition}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="flex items-center space-x-3 p-4 rounded-xl border hover-elevate cursor-pointer"
+                            transition={{ delay: index * 0.03 }}
+                            className="flex items-center space-x-2 px-3 py-2 rounded-lg border hover-elevate cursor-pointer"
                             onClick={() =>
                               setData({ ...data, comorbidities: toggleArrayItem(data.comorbidities, condition) })
                             }
@@ -488,8 +474,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                                 setData({ ...data, comorbidities: toggleArrayItem(data.comorbidities, condition) })
                               }
                             />
-                            <Label htmlFor={condition} className="flex-1 cursor-pointer font-medium flex items-center gap-2">
-                              <Heart className="h-4 w-4 text-primary" />
+                            <Label htmlFor={condition} className="flex-1 cursor-pointer text-sm flex items-center gap-2">
+                              <Heart className="h-3.5 w-3.5 text-primary" />
                               {condition}
                             </Label>
                           </motion.div>
@@ -500,7 +486,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
                         onClick={() => handleMultiSelect("comorbidities")}
-                        className="w-full p-4 rounded-xl bg-primary text-primary-foreground font-medium hover-elevate active-elevate-2"
+                        className="w-full py-3 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover-elevate active-elevate-2"
                         data-testid="button-continue-comorbidities"
                       >
                         Continuar
@@ -509,17 +495,17 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   )}
 
                   {step === 12 && (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-6 bg-card rounded-2xl border space-y-4"
+                        className="p-4 bg-card rounded-xl border space-y-3"
                       >
                         <p className="text-sm leading-relaxed text-muted-foreground">
                           Ao continuar, você concorda que a Zempi colete e processe suas informações de saúde para
                           fornecer acompanhamento clínico personalizado.
                         </p>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
+                        <ul className="space-y-1.5 text-xs text-muted-foreground">
                           <li>✓ Criptografia hospitalar (AES-256)</li>
                           <li>✓ Conformidade LGPD</li>
                           <li>✓ Dados no Brasil</li>
@@ -531,7 +517,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="flex items-start space-x-3 p-4 rounded-xl border hover-elevate cursor-pointer"
+                        className="flex items-start space-x-2 px-3 py-2.5 rounded-lg border hover-elevate cursor-pointer"
                         onClick={() => setData({ ...data, privacyConsent: !data.privacyConsent })}
                         data-testid="option-consent"
                       >
@@ -540,7 +526,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                           checked={data.privacyConsent}
                           onCheckedChange={(checked) => setData({ ...data, privacyConsent: checked as boolean })}
                         />
-                        <Label htmlFor="consent" className="cursor-pointer leading-relaxed">
+                        <Label htmlFor="consent" className="cursor-pointer text-sm leading-relaxed">
                           Eu concordo com os termos de uso e política de privacidade
                         </Label>
                       </motion.div>
@@ -551,7 +537,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         transition={{ delay: 0.4 }}
                         onClick={handleComplete}
                         disabled={!data.privacyConsent}
-                        className="w-full p-4 rounded-xl bg-primary text-primary-foreground font-medium hover-elevate active-elevate-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-3 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover-elevate active-elevate-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="button-complete"
                       >
                         Finalizar e Salvar 🎉
