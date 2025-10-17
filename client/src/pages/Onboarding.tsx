@@ -501,16 +501,25 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         animate={{ opacity: 1, y: 0 }}
                         className="p-4 bg-card rounded-xl border space-y-3"
                       >
-                        <p className="text-sm leading-relaxed text-muted-foreground">
-                          Ao continuar, você concorda que a Zempi colete e processe suas informações de saúde para
-                          fornecer acompanhamento clínico personalizado.
-                        </p>
-                        <ul className="space-y-1.5 text-xs text-muted-foreground">
-                          <li>✓ Criptografia hospitalar (AES-256)</li>
-                          <li>✓ Conformidade LGPD</li>
-                          <li>✓ Dados no Brasil</li>
-                          <li>✓ Você pode deletar a qualquer momento</li>
-                        </ul>
+                        <h3 className="font-semibold text-sm">Consentimento e Privacidade</h3>
+                        
+                        <div className="space-y-2 text-xs leading-relaxed text-muted-foreground">
+                          <p>
+                            <strong className="text-foreground">Uso dos dados:</strong> As informações fornecidas serão utilizadas exclusivamente para personalizar sua experiência e fornecer orientações adequadas ao seu tratamento com GLP-1.
+                          </p>
+                          
+                          <p>
+                            <strong className="text-foreground">Privacidade:</strong> Seus dados são protegidos e não serão compartilhados com terceiros sem seu consentimento explícito.
+                          </p>
+                          
+                          <p>
+                            <strong className="text-foreground">Finalidade educativa:</strong> Este aplicativo tem finalidade educativa e não substitui consultas médicas ou orientações profissionais.
+                          </p>
+                          
+                          <p>
+                            <strong className="text-foreground">Responsabilidade:</strong> Em caso de sintomas graves ou dúvidas sobre seu tratamento, procure sempre orientação médica presencial.
+                          </p>
+                        </div>
                       </motion.div>
 
                       <motion.div
@@ -526,8 +535,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                           checked={data.privacyConsent}
                           onCheckedChange={(checked) => setData({ ...data, privacyConsent: checked as boolean })}
                         />
-                        <Label htmlFor="consent" className="cursor-pointer text-sm leading-relaxed">
-                          Eu concordo com os termos de uso e política de privacidade
+                        <Label htmlFor="consent" className="cursor-pointer text-xs leading-relaxed">
+                          Confirmo que li e concordo com os termos acima. Autorizo o uso das minhas informações para personalização do meu acompanhamento e entendo que este aplicativo tem finalidade educativa.
                         </Label>
                       </motion.div>
 
