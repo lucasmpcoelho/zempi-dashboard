@@ -4,9 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import MetricCard from "@/components/MetricCard";
 import MacroCard from "@/components/MacroCard";
+import MacroGoalsDialog from "@/components/MacroGoalsDialog";
 import NutritionSummary from "@/components/NutritionSummary";
 import MedicationTracker from "@/components/MedicationTracker";
 import MoodTracker from "@/components/MoodTracker";
+import PersonalizedAlert from "@/components/PersonalizedAlert";
 import EducationalCard from "@/components/EducationalCard";
 import { 
   Weight, 
@@ -59,6 +61,17 @@ const mockMoodEntries = [
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("visao-geral");
+  const [macroGoals, setMacroGoals] = useState({
+    calories: 1600,
+    protein: 120,
+    carbs: 180,
+    fats: 50,
+  });
+
+  // Calculate protein per kg (mock weight: 78.5kg)
+  const currentWeight = 78.5;
+  const currentProteinIntake = 85;
+  const proteinPerKg = currentProteinIntake / currentWeight;
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,19 +109,35 @@ export default function Dashboard() {
               </div>
             </section>
 
+            {/* Alertas Personalizados */}
+            {proteinPerKg < 1.4 && (
+              <section>
+                <PersonalizedAlert 
+                  type="warning"
+                  title="⚠️ Alerta de Massa Muscular"
+                  description={`Sua ingestão de proteína está em ${proteinPerKg.toFixed(1)}g/kg (ideal: 1.6g/kg para GLP-1). Isso pode levar à perda muscular junto com a gordura. Aumente para ${Math.round(currentWeight * 1.6)}g/dia.`}
+                  action={{
+                    label: "Ver recomendações de proteína",
+                    onClick: () => setActiveTab("educacao")
+                  }}
+                />
+              </section>
+            )}
+
             {/* Macronutrientes de Hoje */}
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Macronutrientes Hoje</h2>
-                <Button variant="ghost" size="sm" className="text-xs" data-testid="button-view-nutrition">
-                  Ver detalhes
-                </Button>
+                <MacroGoalsDialog 
+                  currentGoals={macroGoals}
+                  onSave={setMacroGoals}
+                />
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <MacroCard label="Calorias" current={1080} target={1600} unit=" kcal" color="hsl(var(--chart-4))" />
-                <MacroCard label="Proteína" current={85} target={120} unit="g" color="hsl(var(--chart-1))" />
-                <MacroCard label="Carboidratos" current={120} target={180} unit="g" color="hsl(var(--chart-2))" />
-                <MacroCard label="Gorduras" current={35} target={50} unit="g" color="hsl(var(--chart-3))" />
+                <MacroCard label="Calorias" current={1080} target={macroGoals.calories} unit=" kcal" color="hsl(var(--chart-4))" />
+                <MacroCard label="Proteína" current={currentProteinIntake} target={macroGoals.protein} unit="g" color="hsl(var(--chart-1))" />
+                <MacroCard label="Carboidratos" current={120} target={macroGoals.carbs} unit="g" color="hsl(var(--chart-2))" />
+                <MacroCard label="Gorduras" current={35} target={macroGoals.fats} unit="g" color="hsl(var(--chart-3))" />
               </div>
             </section>
 
@@ -178,19 +207,19 @@ export default function Dashboard() {
               </Card>
             </section>
 
-            {/* Insights Personalizados */}
+            {/* Mais Insights */}
             <section>
-              <h3 className="text-lg font-semibold mb-4">Insights Personalizados</h3>
+              <h3 className="text-lg font-semibold mb-4">Mais Insights</h3>
               <div className="grid sm:grid-cols-2 gap-4">
-                <EducationalCard
-                  icon={Apple}
-                  title="Aumente sua proteína"
-                  description="Você está consumindo 85g de proteína. Para preservar massa muscular, aumente para 120g/dia (1.6g/kg)."
+                <PersonalizedAlert 
+                  type="tip"
+                  title="💡 Dica para seu biotipo"
+                  description="Considerando seu biotipo endomorfo, exercícios de resistência 3x por semana maximizarão seus resultados com GLP-1."
                 />
-                <EducationalCard
-                  icon={Activity}
-                  title="Adicione exercícios"
-                  description="Exercícios de resistência 3x por semana ajudam a manter massa magra durante a perda de peso."
+                <PersonalizedAlert 
+                  type="success"
+                  title="✅ Ótimo progresso!"
+                  description="Você perdeu 6.5kg em 6 semanas de forma saudável e sustentável. Continue assim!"
                 />
               </div>
             </section>
