@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Smile, Meh, Frown, Plus, TrendingUp, TrendingDown } from "lucide-react";
-import { format, subDays } from "date-fns";
+import { Smile, Meh, Frown, TrendingUp, TrendingDown } from "lucide-react";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import AddMoodDialog from "@/components/AddMoodDialog";
 
 interface MoodEntry {
   date: Date;
@@ -13,7 +13,6 @@ interface MoodEntry {
 
 interface MoodTrackerProps {
   entries: MoodEntry[];
-  onAddEntry?: () => void;
 }
 
 const moodConfig = {
@@ -40,7 +39,7 @@ const moodConfig = {
   },
 };
 
-export default function MoodTracker({ entries, onAddEntry }: MoodTrackerProps) {
+export default function MoodTracker({ entries }: MoodTrackerProps) {
   const todayEntry = entries.find(e => 
     format(e.date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
   );
@@ -81,15 +80,7 @@ export default function MoodTracker({ entries, onAddEntry }: MoodTrackerProps) {
             )}
           </div>
         </div>
-        <Button 
-          size="sm" 
-          variant="outline" 
-          onClick={onAddEntry}
-          data-testid="button-add-mood"
-        >
-          <Plus className="h-4 w-4 mr-1" />
-          Adicionar
-        </Button>
+        <AddMoodDialog />
       </div>
 
       {!todayEntry && (
@@ -106,7 +97,7 @@ export default function MoodTracker({ entries, onAddEntry }: MoodTrackerProps) {
                   variant="outline"
                   size="sm"
                   className={`${moodConfig[mood].bg} ${moodConfig[mood].border}`}
-                  onClick={onAddEntry}
+                  onClick={() => {}}
                   data-testid={`button-mood-${mood}`}
                 >
                   <MoodIcon className={`h-4 w-4 ${moodConfig[mood].color}`} />

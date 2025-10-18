@@ -159,3 +159,43 @@ Preferred communication style: Simple, everyday language.
 - Type safety across the full stack through TypeScript
 - Separation of concerns: UI components, business logic, data access
 - Progressive enhancement approach to features
+
+## Recent Updates
+
+**January 2025 - UX Overhaul & Feature Additions:**
+
+**Mobile-First Dashboard Redesign:**
+- Bottom navigation inspired by Nubank/Apple (Início, Educação, Perfil)
+- Gradient hero card showcasing current weight and target
+- Larger, bolder typography for improved readability
+- Smooth page transitions with Framer Motion AnimatePresence
+- Generous spacing (px-5 padding) optimized for mobile devices
+- Cards with p-5 padding instead of p-4 for better touch targets
+
+**Functional Dialogs:**
+- `AddMealDialog`: Full meal tracking with calories and macros
+- `AddMoodDialog`: Emotional state tracking (good/neutral/bad)
+- Integrated directly into NutritionSummary and MoodTracker components
+
+**Symptoms Tracking (NEW):**
+- Separated physical symptoms from emotional mood
+- `SymptomsTracker` component for GLP-1 side effects
+- Common symptoms: Náusea, Enjoo, Vômito, Fadiga, Tontura, etc.
+- Daily tracking with historical view (last 7 days)
+- Uses same mood_entries table but with focus on symptoms field
+
+**Onboarding Improvements:**
+- Fixed back button bug (prevented duplicate questions)
+- Reorganized question flow: dose question moved after medication selection
+- Added `isGoingBack` state flag to prevent message duplication
+
+**Component Architecture:**
+- `/client/src/components/AddMealDialog.tsx`: Meal entry form with validation
+- `/client/src/components/AddMoodDialog.tsx`: Mood selection with notes
+- `/client/src/components/SymptomsTracker.tsx`: Physical symptom logging
+- Updated NutritionSummary and MoodTracker to use dialog triggers
+
+**Bug Fixes:**
+- Checkbox handlers in onboarding now use proper onCheckedChange
+- Profile retrieval uses ORDER BY createdAt DESC for latest profile
+- Removed duplicate onClick handlers causing empty arrays

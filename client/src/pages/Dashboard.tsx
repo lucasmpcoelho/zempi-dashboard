@@ -8,8 +8,11 @@ import MacroGoalsDialog from "@/components/MacroGoalsDialog";
 import NutritionSummary from "@/components/NutritionSummary";
 import MedicationTracker from "@/components/MedicationTracker";
 import MoodTracker from "@/components/MoodTracker";
+import SymptomsTracker from "@/components/SymptomsTracker";
 import PersonalizedAlert from "@/components/PersonalizedAlert";
 import EducationalCard from "@/components/EducationalCard";
+import AddMealDialog from "@/components/AddMealDialog";
+import AddMoodDialog from "@/components/AddMoodDialog";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -301,6 +304,13 @@ export default function Dashboard() {
                   entries={moodEntries.map((entry: any) => ({
                     date: new Date(entry.date),
                     mood: entry.mood,
+                    symptoms: []
+                  }))}
+                />
+
+                <SymptomsTracker 
+                  entries={moodEntries.map((entry: any) => ({
+                    date: new Date(entry.date),
                     symptoms: entry.symptoms || []
                   }))}
                 />

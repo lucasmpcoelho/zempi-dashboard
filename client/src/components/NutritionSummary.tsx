@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Apple, Plus } from "lucide-react";
+import { Apple } from "lucide-react";
+import AddMealDialog from "@/components/AddMealDialog";
 
 interface Meal {
   name: string;
@@ -12,14 +13,12 @@ interface NutritionSummaryProps {
   meals: Meal[];
   totalCalories: number;
   targetCalories: number;
-  onAddMeal?: () => void;
 }
 
 export default function NutritionSummary({ 
   meals, 
   totalCalories, 
-  targetCalories,
-  onAddMeal 
+  targetCalories
 }: NutritionSummaryProps) {
   const percentage = Math.min((totalCalories / targetCalories) * 100, 100);
   const remaining = Math.max(targetCalories - totalCalories, 0);
@@ -38,15 +37,7 @@ export default function NutritionSummary({
             </p>
           </div>
         </div>
-        <Button 
-          size="sm" 
-          variant="outline" 
-          onClick={onAddMeal}
-          data-testid="button-add-meal"
-        >
-          <Plus className="h-4 w-4 mr-1" />
-          Refeição
-        </Button>
+        <AddMealDialog />
       </div>
 
       <div className="mb-6">
@@ -86,9 +77,13 @@ export default function NutritionSummary({
           <p className="text-sm text-muted-foreground mb-3">
             Nenhuma refeição registrada hoje
           </p>
-          <Button size="sm" onClick={onAddMeal} data-testid="button-log-first-meal">
-            Adicionar primeira refeição
-          </Button>
+          <AddMealDialog 
+            trigger={
+              <Button size="sm" data-testid="button-log-first-meal">
+                Adicionar primeira refeição
+              </Button>
+            }
+          />
         </div>
       )}
     </Card>
