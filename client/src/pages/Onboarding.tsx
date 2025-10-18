@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Pill, Heart, Utensils, Activity, ArrowLeft } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface OnboardingData {
   name: string;
@@ -249,13 +251,44 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     return [...array, item];
   };
 
+  const saveMutation = useMutation({
+    mutationFn: async (profileData: any) => {
+      const response = await apiRequest("POST", "/api/profile", profileData);
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Dados salvos com sucesso! 🎉",
+        description: "Suas informações foram registradas de forma segura.",
+      });
+      setStep(13);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao salvar dados",
+        description: error.message || "Tente novamente mais tarde.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleComplete = () => {
-    console.log("Onboarding data:", data);
-    toast({
-      title: "Dados salvos com sucesso! 🎉",
-      description: "Suas informações foram registradas de forma segura.",
-    });
-    setStep(13);
+    // Don't include userId in the request - server will inject it
+    const profileData = {
+      name: data.name,
+      dateOfBirth: data.dateOfBirth,
+      medication: data.medication,
+      height: parseFloat(data.height),
+      weight: parseFloat(data.weight),
+      targetWeight: parseFloat(data.targetWeight),
+      treatmentStartDate: data.treatmentStartDate,
+      dose: data.dose,
+      bodyType: data.bodyType,
+      foodPreferences: data.foodPreferences,
+      comorbidities: data.comorbidities,
+    };
+
+    saveMutation.mutate(profileData);
   };
 
   if (step === 0) {

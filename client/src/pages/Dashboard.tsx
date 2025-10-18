@@ -10,6 +10,7 @@ import MedicationTracker from "@/components/MedicationTracker";
 import MoodTracker from "@/components/MoodTracker";
 import PersonalizedAlert from "@/components/PersonalizedAlert";
 import EducationalCard from "@/components/EducationalCard";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Weight, 
   Ruler, 
@@ -20,44 +21,13 @@ import {
   Activity,
   User,
   Calendar,
-  Flame
+  Flame,
+  Loader2
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { addDays } from "date-fns";
+import { differenceInDays, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import educationalImage from "@assets/generated_images/GLP-1_mechanism_educational_diagram_01265cd8.png";
-
-const mockWeightData = [
-  { date: "Sem 1", weight: 85 },
-  { date: "Sem 2", weight: 84 },
-  { date: "Sem 3", weight: 82.5 },
-  { date: "Sem 4", weight: 81 },
-  { date: "Sem 5", weight: 80 },
-  { date: "Sem 6", weight: 78.5 },
-];
-
-const mockMeals = [
-  { name: "Café da manhã", calories: 380, time: "08:30" },
-  { name: "Almoço", calories: 520, time: "13:00" },
-  { name: "Lanche", calories: 180, time: "16:30" },
-];
-
-const mockMedicationDoses = [
-  { date: addDays(new Date(), 7), completed: false, dose: "1.0 mg" },
-  { date: new Date(), completed: false, dose: "1.0 mg" },
-  { date: addDays(new Date(), -7), completed: true, dose: "1.0 mg" },
-  { date: addDays(new Date(), -14), completed: true, dose: "1.0 mg" },
-  { date: addDays(new Date(), -21), completed: true, dose: "0.5 mg" },
-  { date: addDays(new Date(), -28), completed: true, dose: "0.5 mg" },
-  { date: addDays(new Date(), -35), completed: true, dose: "0.25 mg" },
-];
-
-const mockMoodEntries = [
-  { date: new Date(), mood: "good" as const, symptoms: [] },
-  { date: addDays(new Date(), -1), mood: "neutral" as const, symptoms: ["Náusea leve"] },
-  { date: addDays(new Date(), -2), mood: "good" as const, symptoms: [] },
-  { date: addDays(new Date(), -3), mood: "bad" as const, symptoms: ["Náusea", "Fadiga"] },
-  { date: addDays(new Date(), -4), mood: "neutral" as const, symptoms: ["Dor de cabeça"] },
-];
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("visao-geral");
@@ -68,10 +38,90 @@ export default function Dashboard() {
     fats: 50,
   });
 
-  // Calculate protein per kg (mock weight: 78.5kg)
-  const currentWeight = 78.5;
-  const currentProteinIntake = 85;
-  const proteinPerKg = currentProteinIntake / currentWeight;
+  // Fetch user profile
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ["/api/profile"],
+  });
+
+  // Fetch meals for today
+  const today = new Date().toISOString().split('T')[0];
+  const { data: meals = [], isLoading: mealsLoading } = useQuery({
+    queryKey: ["/api/meals", { date: today }],
+  });
+
+  // Fetch medication doses
+  const { data: medicationDoses = [], isLoading: dosesLoading } = useQuery({
+    queryKey: ["/api/medication-doses"],
+  });
+
+  // Fetch mood entries
+  const { data: moodEntries = [], isLoading: moodLoading } = useQuery({
+    queryKey: ["/api/mood-entries"],
+  });
+
+  // Fetch weight entries
+  const { data: weightEntries = [], isLoading: weightLoading } = useQuery({
+    queryKey: ["/api/weight-entries"],
+  });
+
+  if (profileLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+          <p className="text-sm text-muted-foreground">Carregando seus dados...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="p-6 max-w-md text-center">
+          <p className="text-sm text-muted-foreground">
+            Perfil não encontrado. Por favor, complete o onboarding primeiro.
+          </p>
+        </Card>
+      </div>
+    );
+  }
+
+  // Calculate metrics
+  const currentWeight = weightEntries.length > 0 ? weightEntries[0].weight : profile.weight;
+  const initialWeight = profile.weight;
+  const weightLost = initialWeight - currentWeight;
+  const treatmentDays = differenceInDays(new Date(), new Date(profile.treatmentStartDate));
+
+  // Calculate macros from today's meals
+  const totalCalories = meals.reduce((sum: number, meal: any) => sum + (meal.calories || 0), 0);
+  const totalProtein = meals.reduce((sum: number, meal: any) => sum + (meal.protein || 0), 0);
+  const totalCarbs = meals.reduce((sum: number, meal: any) => sum + (meal.carbs || 0), 0);
+  const totalFats = meals.reduce((sum: number, meal: any) => sum + (meal.fats || 0), 0);
+
+  // Calculate protein per kg
+  const proteinPerKg = currentWeight > 0 ? totalProtein / currentWeight : 0;
+
+  // Prepare weight chart data (last 6 entries)
+  const weightChartData = weightEntries
+    .slice(0, 6)
+    .reverse()
+    .map((entry: any) => ({
+      date: format(new Date(entry.date), "dd/MM", { locale: ptBR }),
+      weight: entry.weight,
+    }));
+
+  // Calculate age from date of birth
+  const calculateAge = (dob: string): number => {
+    const birthDate = new Date(dob.split('/').reverse().join('-'));
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -80,7 +130,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-semibold">Zempi 🌱</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">Olá, Maria</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Olá, {profile.name.split(' ')[0]}</p>
             </div>
             <Button variant="ghost" size="icon" data-testid="button-profile">
               <User className="h-5 w-5" />
@@ -102,15 +152,31 @@ export default function Dashboard() {
             <section>
               <h2 className="text-lg font-semibold mb-4">Resumo</h2>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <MetricCard icon={Weight} label="Peso Atual" value="78.5 kg" />
-                <MetricCard icon={Target} label="Meta" value="72 kg" />
-                <MetricCard icon={TrendingDown} label="Progresso" value="-6.5 kg" />
-                <MetricCard icon={Calendar} label="Tratamento" value="42 dias" />
+                <MetricCard 
+                  icon={Weight} 
+                  label="Peso Atual" 
+                  value={`${currentWeight.toFixed(1)} kg`} 
+                />
+                <MetricCard 
+                  icon={Target} 
+                  label="Meta" 
+                  value={`${profile.targetWeight} kg`} 
+                />
+                <MetricCard 
+                  icon={TrendingDown} 
+                  label="Progresso" 
+                  value={`${weightLost > 0 ? '-' : ''}${Math.abs(weightLost).toFixed(1)} kg`} 
+                />
+                <MetricCard 
+                  icon={Calendar} 
+                  label="Tratamento" 
+                  value={`${treatmentDays} dias`} 
+                />
               </div>
             </section>
 
             {/* Alertas Personalizados */}
-            {proteinPerKg < 1.4 && (
+            {proteinPerKg < 1.4 && totalProtein > 0 && (
               <section>
                 <PersonalizedAlert 
                   type="warning"
@@ -134,93 +200,142 @@ export default function Dashboard() {
                 />
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <MacroCard label="Calorias" current={1080} target={macroGoals.calories} unit=" kcal" color="hsl(var(--chart-4))" />
-                <MacroCard label="Proteína" current={currentProteinIntake} target={macroGoals.protein} unit="g" color="hsl(var(--chart-1))" />
-                <MacroCard label="Carboidratos" current={120} target={macroGoals.carbs} unit="g" color="hsl(var(--chart-2))" />
-                <MacroCard label="Gorduras" current={35} target={macroGoals.fats} unit="g" color="hsl(var(--chart-3))" />
+                <MacroCard 
+                  label="Calorias" 
+                  current={totalCalories} 
+                  target={macroGoals.calories} 
+                  unit=" kcal" 
+                  color="hsl(var(--chart-4))" 
+                />
+                <MacroCard 
+                  label="Proteína" 
+                  current={totalProtein} 
+                  target={macroGoals.protein} 
+                  unit="g" 
+                  color="hsl(var(--chart-1))" 
+                />
+                <MacroCard 
+                  label="Carboidratos" 
+                  current={totalCarbs} 
+                  target={macroGoals.carbs} 
+                  unit="g" 
+                  color="hsl(var(--chart-2))" 
+                />
+                <MacroCard 
+                  label="Gorduras" 
+                  current={totalFats} 
+                  target={macroGoals.fats} 
+                  unit="g" 
+                  color="hsl(var(--chart-3))" 
+                />
               </div>
             </section>
 
             {/* Grid de Cards - Nutrição, Medicação, Humor */}
             <section className="grid lg:grid-cols-3 gap-4 sm:gap-6">
               <NutritionSummary 
-                meals={mockMeals}
-                totalCalories={1080}
-                targetCalories={1600}
+                meals={meals.map((meal: any) => ({
+                  name: meal.name,
+                  calories: meal.calories,
+                  time: meal.time
+                }))}
+                totalCalories={totalCalories}
+                targetCalories={macroGoals.calories}
               />
               
-              <MedicationTracker doses={mockMedicationDoses} />
+              <MedicationTracker 
+                doses={medicationDoses.map((dose: any) => ({
+                  date: new Date(dose.scheduledDate),
+                  completed: dose.completed === 1,
+                  dose: dose.dose
+                }))}
+              />
               
-              <MoodTracker entries={mockMoodEntries} />
+              <MoodTracker 
+                entries={moodEntries.map((entry: any) => ({
+                  date: new Date(entry.date),
+                  mood: entry.mood,
+                  symptoms: entry.symptoms || []
+                }))}
+              />
             </section>
 
             {/* Gráfico de Evolução de Peso */}
-            <section>
-              <Card className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                  <div>
-                    <h3 className="text-lg font-semibold">Evolução de Peso</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">Últimas 6 semanas</p>
+            {weightChartData.length > 0 && (
+              <section>
+                <Card className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <div>
+                      <h3 className="text-lg font-semibold">Evolução de Peso</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Últimos {weightChartData.length} registros
+                      </p>
+                    </div>
+                    {weightLost > 0 && (
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-chart-2/10 text-chart-2 w-fit">
+                        <TrendingDown className="h-4 w-4" />
+                        <span className="text-sm font-semibold tabular-nums">-{weightLost.toFixed(1)} kg</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-chart-2/10 text-chart-2 w-fit">
-                    <TrendingDown className="h-4 w-4" />
-                    <span className="text-sm font-semibold tabular-nums">-6.5 kg</span>
+                  
+                  <div className="h-64" data-testid="chart-weight">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={weightChartData}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" opacity={0.3} />
+                        <XAxis 
+                          dataKey="date" 
+                          className="text-xs"
+                          tick={{ fill: "hsl(var(--muted-foreground))" }}
+                          tickLine={false}
+                        />
+                        <YAxis 
+                          className="text-xs"
+                          tick={{ fill: "hsl(var(--muted-foreground))" }}
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: "hsl(var(--card))",
+                            border: "1px solid hsl(var(--border))",
+                            borderRadius: "8px",
+                            fontSize: "12px"
+                          }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="weight" 
+                          stroke="hsl(var(--chart-1))" 
+                          strokeWidth={2.5}
+                          dot={{ fill: "hsl(var(--chart-1))", r: 4 }}
+                          activeDot={{ r: 6 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </div>
-                </div>
-                
-                <div className="h-64" data-testid="chart-weight">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={mockWeightData}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" opacity={0.3} />
-                      <XAxis 
-                        dataKey="date" 
-                        className="text-xs"
-                        tick={{ fill: "hsl(var(--muted-foreground))" }}
-                        tickLine={false}
-                      />
-                      <YAxis 
-                        domain={[75, 90]}
-                        className="text-xs"
-                        tick={{ fill: "hsl(var(--muted-foreground))" }}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--card))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: "8px",
-                          fontSize: "12px"
-                        }}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="weight" 
-                        stroke="hsl(var(--chart-1))" 
-                        strokeWidth={2.5}
-                        dot={{ fill: "hsl(var(--chart-1))", r: 4 }}
-                        activeDot={{ r: 6 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </Card>
-            </section>
+                </Card>
+              </section>
+            )}
 
             {/* Mais Insights */}
             <section>
               <h3 className="text-lg font-semibold mb-4">Mais Insights</h3>
               <div className="grid sm:grid-cols-2 gap-4">
-                <PersonalizedAlert 
-                  type="tip"
-                  title="💡 Dica para seu biotipo"
-                  description="Considerando seu biotipo endomorfo, exercícios de resistência 3x por semana maximizarão seus resultados com GLP-1."
-                />
-                <PersonalizedAlert 
-                  type="success"
-                  title="✅ Ótimo progresso!"
-                  description="Você perdeu 6.5kg em 6 semanas de forma saudável e sustentável. Continue assim!"
-                />
+                {profile.bodyType && profile.bodyType !== "Não sei" && (
+                  <PersonalizedAlert 
+                    type="tip"
+                    title="💡 Dica para seu biotipo"
+                    description={`Considerando seu biotipo ${profile.bodyType.toLowerCase()}, exercícios de resistência 3x por semana maximizarão seus resultados com GLP-1.`}
+                  />
+                )}
+                {weightLost > 0 && (
+                  <PersonalizedAlert 
+                    type="success"
+                    title="✅ Ótimo progresso!"
+                    description={`Você perdeu ${weightLost.toFixed(1)}kg de forma saudável e sustentável. Continue assim!`}
+                  />
+                )}
               </div>
             </section>
           </TabsContent>
@@ -307,19 +422,25 @@ export default function Dashboard() {
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Nome</p>
-                  <p className="font-medium" data-testid="text-profile-name">Maria Costa</p>
+                  <p className="font-medium" data-testid="text-profile-name">{profile.name}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Idade</p>
-                  <p className="font-medium" data-testid="text-profile-age">42 anos</p>
+                  <p className="font-medium" data-testid="text-profile-age">
+                    {calculateAge(profile.dateOfBirth)} anos
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Altura</p>
-                  <p className="font-medium font-mono tabular-nums" data-testid="text-profile-height">165 cm</p>
+                  <p className="font-medium font-mono tabular-nums" data-testid="text-profile-height">
+                    {profile.height} cm
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Peso Inicial</p>
-                  <p className="font-medium font-mono tabular-nums" data-testid="text-profile-initial-weight">85 kg</p>
+                  <p className="font-medium font-mono tabular-nums" data-testid="text-profile-initial-weight">
+                    {profile.weight} kg
+                  </p>
                 </div>
               </div>
             </Card>
@@ -329,19 +450,23 @@ export default function Dashboard() {
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Medicamento</p>
-                  <p className="font-medium" data-testid="text-profile-medication">Ozempic</p>
+                  <p className="font-medium" data-testid="text-profile-medication">{profile.medication}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Dose Atual</p>
-                  <p className="font-medium font-mono tabular-nums" data-testid="text-profile-dose">1.0 mg</p>
+                  <p className="font-medium font-mono tabular-nums" data-testid="text-profile-dose">
+                    {profile.dose}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Tipo Corporal</p>
-                  <p className="font-medium" data-testid="text-profile-bodytype">Endomorfo</p>
+                  <p className="font-medium" data-testid="text-profile-bodytype">{profile.bodyType}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Início do Tratamento</p>
-                  <p className="font-medium" data-testid="text-profile-start-date">15/08/2024</p>
+                  <p className="font-medium" data-testid="text-profile-start-date">
+                    {profile.treatmentStartDate}
+                  </p>
                 </div>
               </div>
             </Card>
@@ -349,21 +474,38 @@ export default function Dashboard() {
             <Card className="p-4 sm:p-6">
               <h3 className="text-base font-semibold mb-4">Preferências Alimentares</h3>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-medium" data-testid="badge-restriction">
-                  Sem Lactose
-                </span>
-                <span className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-medium">
-                  Low-carb
-                </span>
+                {profile.foodPreferences && profile.foodPreferences.length > 0 ? (
+                  profile.foodPreferences.map((pref: string) => (
+                    <span 
+                      key={pref}
+                      className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-medium" 
+                      data-testid="badge-restriction"
+                    >
+                      {pref}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">Nenhuma preferência registrada</p>
+                )}
               </div>
             </Card>
 
             <Card className="p-4 sm:p-6">
               <h3 className="text-base font-semibold mb-4">Condições de Saúde</h3>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1.5 bg-chart-3/10 text-chart-3 rounded-lg text-sm font-medium" data-testid="badge-comorbidity">
-                  Hipertensão
-                </span>
+                {profile.comorbidities && profile.comorbidities.length > 0 ? (
+                  profile.comorbidities.map((condition: string) => (
+                    <span 
+                      key={condition}
+                      className="px-3 py-1.5 bg-chart-3/10 text-chart-3 rounded-lg text-sm font-medium" 
+                      data-testid="badge-comorbidity"
+                    >
+                      {condition}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">Nenhuma condição registrada</p>
+                )}
               </div>
             </Card>
           </TabsContent>
