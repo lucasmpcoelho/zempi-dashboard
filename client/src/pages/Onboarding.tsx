@@ -147,21 +147,21 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           hint: "Cada medicamento tem protocolos específicos que vamos acompanhar"
         },
         4: { 
-          text: "Ótimo! Agora me conta, qual é a sua altura? 📏" 
+          text: "Estamos quase lá! Qual é a dose que você está tomando? 💉" 
         },
         5: { 
-          text: "Legal! E qual é o seu peso atual? ⚖️" 
+          text: "Ótimo! Agora me conta, qual é a sua altura? 📏" 
         },
         6: { 
+          text: "Legal! E qual é o seu peso atual? ⚖️" 
+        },
+        7: { 
           text: "Qual é o seu peso alvo? 🎯",
           hint: "Vamos criar um plano gradual e saudável para alcançar seu objetivo"
         },
-        7: { 
+        8: { 
           text: "Quando você começou o tratamento? 📅",
           hint: "Isso nos ajuda a entender em que fase você está e ajustar as orientações"
-        },
-        8: { 
-          text: "Estamos quase lá! Qual é a dose que você está tomando? 💉" 
         },
         9: { 
           text: "Como você descreveria seu tipo corporal? 💪",
@@ -394,12 +394,20 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   {step === 4 && (
                     <ChatInput
                       type="number"
+                      onSubmit={(value) => handleInputSubmit(value, "dose")}
+                      placeholder="Dose em mg (ex: 0.5)"
+                    />
+                  )}
+
+                  {step === 5 && (
+                    <ChatInput
+                      type="number"
                       onSubmit={(value) => handleInputSubmit(value, "height")}
                       placeholder="Altura em centímetros (ex: 170)"
                     />
                   )}
 
-                  {step === 5 && (
+                  {step === 6 && (
                     <ChatInput
                       type="number"
                       onSubmit={(value) => handleInputSubmit(value, "weight")}
@@ -407,7 +415,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     />
                   )}
 
-                  {step === 6 && (
+                  {step === 7 && (
                     <ChatInput
                       type="number"
                       onSubmit={(value) => handleInputSubmit(value, "targetWeight")}
@@ -415,18 +423,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     />
                   )}
 
-                  {step === 7 && (
+                  {step === 8 && (
                     <DateInput
                       onSubmit={(value) => handleInputSubmit(value, "treatmentStartDate")}
                       placeholder="DD/MM/AAAA"
-                    />
-                  )}
-
-                  {step === 8 && (
-                    <ChatInput
-                      type="number"
-                      onSubmit={(value) => handleInputSubmit(value, "dose")}
-                      placeholder="Dose em mg (ex: 0.5)"
                     />
                   )}
 
