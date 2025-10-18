@@ -110,6 +110,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [messages, setMessages] = useState<Array<{ text: string; isBot: boolean; hint?: string }>>([]);
   const [showOptions, setShowOptions] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isGoingBack, setIsGoingBack] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -120,8 +121,12 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   }, [messages, showOptions]);
 
   useEffect(() => {
-    if (step > 0 && step <= 12) {
+    if (step > 0 && step <= 12 && !isGoingBack) {
       addBotMessage();
+    }
+    if (isGoingBack) {
+      setIsGoingBack(false);
+      setShowOptions(true);
     }
   }, [step]);
 
@@ -188,6 +193,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     if (step > 1) {
       setShowOptions(false);
       setIsTransitioning(true);
+      setIsGoingBack(true);
       
       setTimeout(() => {
         // Remove last 2 messages (bot question + user answer)
