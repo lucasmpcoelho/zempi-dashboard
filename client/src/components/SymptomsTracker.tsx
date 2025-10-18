@@ -15,8 +15,8 @@ import { AlertCircle, Plus, TrendingDown, Check } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, queryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const commonSymptoms = [
   "Náusea",
@@ -54,14 +54,11 @@ export default function SymptomsTracker({ entries }: SymptomsTrackerProps) {
   const addSymptomsMutation = useMutation({
     mutationFn: async (symptoms: string[]) => {
       const today = new Date().toISOString().split('T')[0];
-      return apiRequest("/api/mood-entries", {
-        method: "POST",
-        body: JSON.stringify({
-          date: today,
-          mood: "neutral",
-          symptoms,
-          notes: null,
-        }),
+      return apiRequest("POST", "/api/mood-entries", {
+        date: today,
+        mood: "neutral",
+        symptoms,
+        notes: null,
       });
     },
     onSuccess: () => {

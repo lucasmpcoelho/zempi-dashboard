@@ -562,14 +562,16 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="flex items-start space-x-2 px-3 py-2.5 rounded-lg border hover-elevate cursor-pointer"
-                        onClick={() => setData({ ...data, privacyConsent: !data.privacyConsent })}
+                        className="flex items-start space-x-2 px-3 py-2.5 rounded-lg border hover-elevate"
                         data-testid="option-consent"
                       >
                         <Checkbox
                           id="consent"
                           checked={data.privacyConsent}
-                          onCheckedChange={(checked) => setData({ ...data, privacyConsent: checked as boolean })}
+                          onCheckedChange={(checked) => {
+                            console.log('Consent checkbox changed to:', checked);
+                            setData({ ...data, privacyConsent: checked as boolean });
+                          }}
                         />
                         <Label htmlFor="consent" className="cursor-pointer text-xs leading-relaxed">
                           Confirmo que li e concordo com os termos acima. Autorizo o uso das minhas informações para personalização do meu acompanhamento e entendo que este aplicativo tem finalidade educativa.

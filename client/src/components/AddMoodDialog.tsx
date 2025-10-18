@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Smile, Meh, Frown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, queryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface AddMoodDialogProps {
   trigger?: React.ReactNode;
@@ -33,12 +33,9 @@ export default function AddMoodDialog({ trigger }: AddMoodDialogProps) {
   const addMoodMutation = useMutation({
     mutationFn: async (data: any) => {
       const today = new Date().toISOString().split('T')[0];
-      return apiRequest("/api/mood-entries", {
-        method: "POST",
-        body: JSON.stringify({
-          ...data,
-          date: today,
-        }),
+      return apiRequest("POST", "/api/mood-entries", {
+        ...data,
+        date: today,
       });
     },
     onSuccess: () => {

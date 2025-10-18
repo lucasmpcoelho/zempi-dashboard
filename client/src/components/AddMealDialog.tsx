@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, queryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface AddMealDialogProps {
   trigger?: React.ReactNode;
@@ -32,13 +32,10 @@ export default function AddMealDialog({ trigger }: AddMealDialogProps) {
   const addMealMutation = useMutation({
     mutationFn: async (data: any) => {
       const today = new Date().toISOString().split('T')[0];
-      return apiRequest("/api/meals", {
-        method: "POST",
-        body: JSON.stringify({
-          ...data,
-          date: today,
-          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        }),
+      return apiRequest("POST", "/api/meals", {
+        ...data,
+        date: today,
+        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       });
     },
     onSuccess: () => {
