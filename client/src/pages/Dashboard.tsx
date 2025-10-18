@@ -3,20 +3,25 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import MetricCard from "@/components/MetricCard";
+import MacroCard from "@/components/MacroCard";
+import NutritionSummary from "@/components/NutritionSummary";
+import MedicationTracker from "@/components/MedicationTracker";
+import MoodTracker from "@/components/MoodTracker";
 import EducationalCard from "@/components/EducationalCard";
 import { 
   Weight, 
   Ruler, 
-  Syringe, 
-  Calendar,
+  TrendingDown,
+  Target,
   Lightbulb,
   Apple,
   Activity,
-  TrendingDown,
-  MessageSquare,
-  User
+  User,
+  Calendar,
+  Flame
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { addDays } from "date-fns";
 import educationalImage from "@assets/generated_images/GLP-1_mechanism_educational_diagram_01265cd8.png";
 
 const mockWeightData = [
@@ -28,134 +33,178 @@ const mockWeightData = [
   { date: "Sem 6", weight: 78.5 },
 ];
 
+const mockMeals = [
+  { name: "Café da manhã", calories: 380, time: "08:30" },
+  { name: "Almoço", calories: 520, time: "13:00" },
+  { name: "Lanche", calories: 180, time: "16:30" },
+];
+
+const mockMedicationDoses = [
+  { date: addDays(new Date(), 7), completed: false, dose: "1.0 mg" },
+  { date: new Date(), completed: false, dose: "1.0 mg" },
+  { date: addDays(new Date(), -7), completed: true, dose: "1.0 mg" },
+  { date: addDays(new Date(), -14), completed: true, dose: "1.0 mg" },
+  { date: addDays(new Date(), -21), completed: true, dose: "0.5 mg" },
+  { date: addDays(new Date(), -28), completed: true, dose: "0.5 mg" },
+  { date: addDays(new Date(), -35), completed: true, dose: "0.25 mg" },
+];
+
+const mockMoodEntries = [
+  { date: new Date(), mood: "good" as const, symptoms: [] },
+  { date: addDays(new Date(), -1), mood: "neutral" as const, symptoms: ["Náusea leve"] },
+  { date: addDays(new Date(), -2), mood: "good" as const, symptoms: [] },
+  { date: addDays(new Date(), -3), mood: "bad" as const, symptoms: ["Náusea", "Fadiga"] },
+  { date: addDays(new Date(), -4), mood: "neutral" as const, symptoms: ["Dor de cabeça"] },
+];
+
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("visao-geral");
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
+      <header className="border-b bg-background/95 backdrop-blur-sm sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Zempi</h1>
-              <p className="text-sm text-muted-foreground">Olá, Maria! 👋</p>
+              <h1 className="text-xl font-semibold">Zempi 🌱</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">Olá, Maria</p>
             </div>
-            <Button variant="outline" size="icon" data-testid="button-profile">
+            <Button variant="ghost" size="icon" data-testid="button-profile">
               <User className="h-5 w-5" />
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-grid" data-testid="tabs-navigation">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 sm:space-y-8">
+          <TabsList className="grid w-full grid-cols-3" data-testid="tabs-navigation">
             <TabsTrigger value="visao-geral" data-testid="tab-overview">Visão Geral</TabsTrigger>
             <TabsTrigger value="educacao" data-testid="tab-education">Educação</TabsTrigger>
             <TabsTrigger value="perfil" data-testid="tab-profile">Perfil</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="visao-geral" className="space-y-8 animate-fade-in">
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Suas Métricas</h2>
-              <p className="text-muted-foreground mb-6">Acompanhe seu progresso em tempo real</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <TabsContent value="visao-geral" className="space-y-6 sm:space-y-8 animate-fade-in">
+            {/* Métricas Principais */}
+            <section>
+              <h2 className="text-lg font-semibold mb-4">Resumo</h2>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <MetricCard icon={Weight} label="Peso Atual" value="78.5 kg" />
-                <MetricCard icon={Ruler} label="Altura" value="165 cm" />
-                <MetricCard icon={Syringe} label="Dose Atual" value="1.0 mg" />
-                <MetricCard icon={Calendar} label="Dias de Tratamento" value="42" />
+                <MetricCard icon={Target} label="Meta" value="72 kg" />
+                <MetricCard icon={TrendingDown} label="Progresso" value="-6.5 kg" />
+                <MetricCard icon={Calendar} label="Tratamento" value="42 dias" />
               </div>
-            </div>
+            </section>
 
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-xl font-semibold">Evolução de Peso</h3>
-                  <p className="text-sm text-muted-foreground">Últimas 6 semanas</p>
-                </div>
-                <div className="flex items-center gap-2 text-chart-2">
-                  <TrendingDown className="h-5 w-5" />
-                  <span className="font-semibold">-6.5 kg</span>
-                </div>
+            {/* Macronutrientes de Hoje */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Macronutrientes Hoje</h2>
+                <Button variant="ghost" size="sm" className="text-xs" data-testid="button-view-nutrition">
+                  Ver detalhes
+                </Button>
               </div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <MacroCard label="Calorias" current={1080} target={1600} unit=" kcal" color="hsl(var(--chart-4))" />
+                <MacroCard label="Proteína" current={85} target={120} unit="g" color="hsl(var(--chart-1))" />
+                <MacroCard label="Carboidratos" current={120} target={180} unit="g" color="hsl(var(--chart-2))" />
+                <MacroCard label="Gorduras" current={35} target={50} unit="g" color="hsl(var(--chart-3))" />
+              </div>
+            </section>
+
+            {/* Grid de Cards - Nutrição, Medicação, Humor */}
+            <section className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+              <NutritionSummary 
+                meals={mockMeals}
+                totalCalories={1080}
+                targetCalories={1600}
+              />
               
-              <div className="h-64" data-testid="chart-weight">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={mockWeightData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis 
-                      dataKey="date" 
-                      className="text-xs"
-                      tick={{ fill: "hsl(var(--muted-foreground))" }}
-                    />
-                    <YAxis 
-                      domain={[75, 90]}
-                      className="text-xs"
-                      tick={{ fill: "hsl(var(--muted-foreground))" }}
-                    />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
-                        borderRadius: "6px"
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="weight" 
-                      stroke="hsl(var(--chart-1))" 
-                      strokeWidth={3}
-                      dot={{ fill: "hsl(var(--chart-1))", r: 5 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
+              <MedicationTracker doses={mockMedicationDoses} />
+              
+              <MoodTracker entries={mockMoodEntries} />
+            </section>
 
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Dicas Personalizadas</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Gráfico de Evolução de Peso */}
+            <section>
+              <Card className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                  <div>
+                    <h3 className="text-lg font-semibold">Evolução de Peso</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">Últimas 6 semanas</p>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-chart-2/10 text-chart-2 w-fit">
+                    <TrendingDown className="h-4 w-4" />
+                    <span className="text-sm font-semibold tabular-nums">-6.5 kg</span>
+                  </div>
+                </div>
+                
+                <div className="h-64" data-testid="chart-weight">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={mockWeightData}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" opacity={0.3} />
+                      <XAxis 
+                        dataKey="date" 
+                        className="text-xs"
+                        tick={{ fill: "hsl(var(--muted-foreground))" }}
+                        tickLine={false}
+                      />
+                      <YAxis 
+                        domain={[75, 90]}
+                        className="text-xs"
+                        tick={{ fill: "hsl(var(--muted-foreground))" }}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: "hsl(var(--card))",
+                          border: "1px solid hsl(var(--border))",
+                          borderRadius: "8px",
+                          fontSize: "12px"
+                        }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="weight" 
+                        stroke="hsl(var(--chart-1))" 
+                        strokeWidth={2.5}
+                        dot={{ fill: "hsl(var(--chart-1))", r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
+            </section>
+
+            {/* Insights Personalizados */}
+            <section>
+              <h3 className="text-lg font-semibold mb-4">Insights Personalizados</h3>
+              <div className="grid sm:grid-cols-2 gap-4">
                 <EducationalCard
                   icon={Apple}
-                  title="Nutrição Balanceada"
-                  description="Aumente sua ingestão de proteínas para 1.6g/kg para preservar massa muscular durante a perda de peso."
+                  title="Aumente sua proteína"
+                  description="Você está consumindo 85g de proteína. Para preservar massa muscular, aumente para 120g/dia (1.6g/kg)."
                 />
                 <EducationalCard
                   icon={Activity}
-                  title="Atividade Física"
-                  description="Exercícios de resistência 3x por semana ajudam a manter a massa magra enquanto você perde gordura."
+                  title="Adicione exercícios"
+                  description="Exercícios de resistência 3x por semana ajudam a manter massa magra durante a perda de peso."
                 />
               </div>
-            </div>
-
-            <Card className="p-6 bg-primary/5 border-primary/20">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-full bg-primary/10 text-primary">
-                  <MessageSquare className="h-6 w-6" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold mb-2">Suporte 24/7 via WhatsApp</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Tem alguma dúvida ou efeito colateral? Nossa equipe está sempre disponível para ajudar.
-                  </p>
-                  <Button data-testid="button-whatsapp-support">
-                    Falar com Suporte
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            </section>
           </TabsContent>
 
-          <TabsContent value="educacao" className="space-y-8 animate-fade-in">
+          <TabsContent value="educacao" className="space-y-6 sm:space-y-8 animate-fade-in">
             <div>
-              <h2 className="text-2xl font-semibold mb-2">Entenda seu Tratamento</h2>
-              <p className="text-muted-foreground mb-6">Aprenda sobre GLP-1 e como otimizar seus resultados</p>
+              <h2 className="text-xl sm:text-2xl font-semibold mb-2">Entenda seu Tratamento</h2>
+              <p className="text-sm text-muted-foreground">Aprenda sobre GLP-1 e como otimizar seus resultados</p>
             </div>
 
             <Card className="overflow-hidden">
-              <div className="p-6 space-y-4">
-                <h3 className="text-xl font-semibold">O que é GLP-1?</h3>
+              <div className="p-4 sm:p-6 space-y-4">
+                <h3 className="text-lg font-semibold">O que é GLP-1?</h3>
                 <div className="w-full max-w-2xl mx-auto">
                   <img 
                     src={educationalImage} 
@@ -165,7 +214,7 @@ export default function Dashboard() {
                   />
                 </div>
                 <div className="prose prose-sm max-w-none">
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     GLP-1 (Glucagon-Like Peptide-1) é um hormônio natural que seu corpo produz. Medicamentos como 
                     Ozempic e Mounjaro imitam este hormônio para ajudar a controlar o apetite, melhorar o controle 
                     de açúcar no sangue e promover perda de peso sustentável.
@@ -174,7 +223,7 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
               <EducationalCard
                 icon={Lightbulb}
                 title="Redução de Efeitos Colaterais"
@@ -197,20 +246,20 @@ export default function Dashboard() {
               />
             </div>
 
-            <Card className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Perguntas Frequentes</h3>
-              <div className="space-y-4">
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <h4 className="font-semibold mb-2">Por quanto tempo devo usar GLP-1?</h4>
-                  <p className="text-sm text-muted-foreground">
+            <Card className="p-4 sm:p-6">
+              <h3 className="text-lg font-semibold mb-4">Perguntas Frequentes</h3>
+              <div className="space-y-3">
+                <div className="p-4 bg-muted/30 rounded-lg">
+                  <h4 className="font-semibold text-sm mb-2">Por quanto tempo devo usar GLP-1?</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     A duração varia por pessoa. Muitos pacientes usam por 6-12 meses ou mais, com supervisão médica 
                     contínua para ajustar doses e avaliar progresso.
                   </p>
                 </div>
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <h4 className="font-semibold mb-2">Vou recuperar o peso depois de parar?</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Manter hábitos saudáveis é fundamental. O Zempi ajuda você a construir uma rotina sustentável 
+                <div className="p-4 bg-muted/30 rounded-lg">
+                  <h4 className="font-semibold text-sm mb-2">Vou recuperar o peso depois de parar?</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Manter hábitos saudáveis é fundamental. A Zempi ajuda você a construir uma rotina sustentável 
                     que continua funcionando mesmo após o tratamento.
                   </p>
                 </div>
@@ -220,67 +269,70 @@ export default function Dashboard() {
 
           <TabsContent value="perfil" className="space-y-6 animate-fade-in">
             <div>
-              <h2 className="text-2xl font-semibold mb-2">Meu Perfil</h2>
-              <p className="text-muted-foreground mb-6">Suas informações pessoais e de tratamento</p>
+              <h2 className="text-xl sm:text-2xl font-semibold mb-2">Meu Perfil</h2>
+              <p className="text-sm text-muted-foreground">Suas informações pessoais e de tratamento</p>
             </div>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Informações Pessoais</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="p-4 sm:p-6">
+              <h3 className="text-base font-semibold mb-4">Informações Pessoais</h3>
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Nome</p>
+                  <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Nome</p>
                   <p className="font-medium" data-testid="text-profile-name">Maria Costa</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Idade</p>
+                  <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Idade</p>
                   <p className="font-medium" data-testid="text-profile-age">42 anos</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Altura</p>
-                  <p className="font-medium font-mono" data-testid="text-profile-height">165 cm</p>
+                  <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Altura</p>
+                  <p className="font-medium font-mono tabular-nums" data-testid="text-profile-height">165 cm</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Peso Inicial</p>
-                  <p className="font-medium font-mono" data-testid="text-profile-initial-weight">85 kg</p>
+                  <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Peso Inicial</p>
+                  <p className="font-medium font-mono tabular-nums" data-testid="text-profile-initial-weight">85 kg</p>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Detalhes do Tratamento</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="p-4 sm:p-6">
+              <h3 className="text-base font-semibold mb-4">Detalhes do Tratamento</h3>
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Medicamento</p>
+                  <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Medicamento</p>
                   <p className="font-medium" data-testid="text-profile-medication">Ozempic</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Dose Atual</p>
-                  <p className="font-medium font-mono" data-testid="text-profile-dose">1.0 mg</p>
+                  <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Dose Atual</p>
+                  <p className="font-medium font-mono tabular-nums" data-testid="text-profile-dose">1.0 mg</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Tipo Corporal</p>
-                  <p className="font-medium" data-testid="text-profile-bodytype">Arredondado</p>
+                  <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Tipo Corporal</p>
+                  <p className="font-medium" data-testid="text-profile-bodytype">Endomorfo</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Início do Tratamento</p>
-                  <p className="font-medium" data-testid="text-profile-start-date">15 de Agosto, 2024</p>
+                  <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Início do Tratamento</p>
+                  <p className="font-medium" data-testid="text-profile-start-date">15/08/2024</p>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Restrições Alimentares</h3>
+            <Card className="p-4 sm:p-6">
+              <h3 className="text-base font-semibold mb-4">Preferências Alimentares</h3>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm" data-testid="badge-restriction">
+                <span className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-medium" data-testid="badge-restriction">
                   Sem Lactose
+                </span>
+                <span className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-medium">
+                  Low-carb
                 </span>
               </div>
             </Card>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Comorbidades</h3>
+            <Card className="p-4 sm:p-6">
+              <h3 className="text-base font-semibold mb-4">Condições de Saúde</h3>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-chart-3/10 text-chart-3 rounded-full text-sm" data-testid="badge-comorbidity">
+                <span className="px-3 py-1.5 bg-chart-3/10 text-chart-3 rounded-lg text-sm font-medium" data-testid="badge-comorbidity">
                   Hipertensão
                 </span>
               </div>
