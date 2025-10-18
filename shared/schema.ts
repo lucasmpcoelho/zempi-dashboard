@@ -42,6 +42,9 @@ export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  foodPreferences: z.array(z.string()).optional().default([]),
+  comorbidities: z.array(z.string()).optional().default([]),
 });
 
 export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;

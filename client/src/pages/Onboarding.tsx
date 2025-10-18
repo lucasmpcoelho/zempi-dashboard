@@ -449,21 +449,18 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.03 }}
-                            className="flex items-center space-x-2 px-3 py-2 rounded-lg border hover-elevate cursor-pointer"
-                            onClick={() =>
-                              setData({ ...data, foodPreferences: toggleArrayItem(data.foodPreferences, preference) })
-                            }
+                            className="flex items-center space-x-2 px-3 py-2 rounded-lg border hover-elevate"
                             data-testid={`option-preference-${preference.toLowerCase().replace(/\s+/g, '-')}`}
                           >
                             <Checkbox
                               id={preference}
                               checked={data.foodPreferences.includes(preference)}
-                              onCheckedChange={() =>
-                                setData({
-                                  ...data,
-                                  foodPreferences: toggleArrayItem(data.foodPreferences, preference),
-                                })
-                              }
+                              onCheckedChange={(checked) => {
+                                const newPreferences = checked
+                                  ? [...data.foodPreferences, preference]
+                                  : data.foodPreferences.filter(p => p !== preference);
+                                setData({ ...data, foodPreferences: newPreferences });
+                              }}
                             />
                             <Label htmlFor={preference} className="flex-1 cursor-pointer text-sm flex items-center gap-2">
                               <Utensils className="h-3.5 w-3.5 text-primary" />
@@ -494,18 +491,18 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.03 }}
-                            className="flex items-center space-x-2 px-3 py-2 rounded-lg border hover-elevate cursor-pointer"
-                            onClick={() =>
-                              setData({ ...data, comorbidities: toggleArrayItem(data.comorbidities, condition) })
-                            }
+                            className="flex items-center space-x-2 px-3 py-2 rounded-lg border hover-elevate"
                             data-testid={`option-comorbidity-${condition.toLowerCase().replace(/\s+/g, '-')}`}
                           >
                             <Checkbox
                               id={condition}
                               checked={data.comorbidities.includes(condition)}
-                              onCheckedChange={() =>
-                                setData({ ...data, comorbidities: toggleArrayItem(data.comorbidities, condition) })
-                              }
+                              onCheckedChange={(checked) => {
+                                const newComorbidities = checked
+                                  ? [...data.comorbidities, condition]
+                                  : data.comorbidities.filter(c => c !== condition);
+                                setData({ ...data, comorbidities: newComorbidities });
+                              }}
                             />
                             <Label htmlFor={condition} className="flex-1 cursor-pointer text-sm flex items-center gap-2">
                               <Heart className="h-3.5 w-3.5 text-primary" />

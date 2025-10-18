@@ -72,7 +72,12 @@ export class DatabaseStorage implements IStorage {
 
   // Profile methods
   async getUserProfile(userId: string): Promise<UserProfile | undefined> {
-    const [profile] = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId));
+    const [profile] = await db
+      .select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, userId))
+      .orderBy(desc(userProfiles.createdAt))
+      .limit(1);
     return profile || undefined;
   }
 
