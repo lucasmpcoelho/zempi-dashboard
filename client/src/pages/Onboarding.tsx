@@ -286,6 +286,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       medication: data.medication,
       height: parseFloat(data.height),
       weight: parseFloat(data.weight),
+      initialWeight: parseFloat(data.weight), // Set initial weight to current weight during onboarding
       targetWeight: parseFloat(data.targetWeight),
       treatmentStartDate: data.treatmentStartDate,
       dose: data.dose,
@@ -394,6 +395,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   {step === 4 && (
                     <ChatInput
                       type="number"
+                      step="0.1"
                       onSubmit={(value) => handleInputSubmit(value, "dose")}
                       placeholder="Dose em mg (ex: 0.5)"
                     />

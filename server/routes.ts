@@ -30,6 +30,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   await ensureDemoUser();
 
+  // User Routes
+  app.get("/api/user", async (req, res) => {
+    try {
+      // Mock user ID for now (will be replaced with auth)
+      const userId = "demo-user-id";
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const profile = await storage.getUserProfile(userId);
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        profile
+      });
+    } catch (error: any) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // User Profile Routes
   app.get("/api/profile", async (req, res) => {
     try {
@@ -199,8 +223,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/weight-entries", async (req, res) => {
     try {
       const userId = "demo-user-id";
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
-      
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
+
+      const entries = await storage.getWeightEntries(userId, limit);
+      res.json(entries);
+    } catch (error: any) {
+      console.error("Error fetching weight entries:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Alias for /api/weight (used by frontend)
+  app.get("/api/weight", async (req, res) => {
+    try {
+      const userId = "demo-user-id";
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
+
+      // For now, return all entries and let frontend filter by date
+      // TODO: Add date range filtering in storage layer
       const entries = await storage.getWeightEntries(userId, limit);
       res.json(entries);
     } catch (error: any) {

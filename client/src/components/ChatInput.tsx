@@ -8,10 +8,11 @@ interface ChatInputProps {
   onSubmit: (value: string) => void;
   placeholder?: string;
   type?: string;
+  step?: string;
   delay?: number;
 }
 
-export default function ChatInput({ onSubmit, placeholder = "Digite aqui...", type = "text", delay = 0 }: ChatInputProps) {
+export default function ChatInput({ onSubmit, placeholder = "Digite aqui...", type = "text", step, delay = 0 }: ChatInputProps) {
   const [value, setValue] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,6 +33,7 @@ export default function ChatInput({ onSubmit, placeholder = "Digite aqui...", ty
     >
       <Input
         type={type}
+        step={step}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}

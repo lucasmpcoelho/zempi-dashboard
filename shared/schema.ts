@@ -27,7 +27,8 @@ export const userProfiles = pgTable("user_profiles", {
   dateOfBirth: date("date_of_birth").notNull(),
   medication: text("medication").notNull(),
   height: integer("height").notNull(), // em cm
-  weight: real("weight").notNull(), // em kg
+  weight: real("weight").notNull(), // em kg (peso atual)
+  initialWeight: real("initial_weight"), // em kg (peso inicial do tratamento)
   targetWeight: real("target_weight").notNull(), // em kg
   treatmentStartDate: date("treatment_start_date").notNull(),
   dose: text("dose").notNull(),
@@ -127,6 +128,43 @@ export const insertWeightEntrySchema = createInsertSchema(weightEntries).omit({
 export type InsertWeightEntry = z.infer<typeof insertWeightEntrySchema>;
 export type WeightEntry = typeof weightEntries.$inferSelect;
 
+// Streaks table
+export const streaks = pgTable("streaks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  type: text("type").notNull(), // "protein", "logging", "medication"
+  currentStreak: integer("current_streak").notNull().default(0),
+  longestStreak: integer("longest_streak").notNull().default(0),
+  lastUpdateDate: date("last_update_date"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertStreakSchema = createInsertSchema(streaks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertStreak = z.infer<typeof insertStreakSchema>;
+export type Streak = typeof streaks.$inferSelect;
+
+// Achievements table
+export const achievements = pgTable("achievements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  badgeId: text("badge_id").notNull(), // "first-week", "muscle-defender", etc.
+  unlockedAt: timestamp("unlocked_at").defaultNow().notNull(),
+});
+
+export const insertAchievementSchema = createInsertSchema(achievements).omit({
+  id: true,
+  unlockedAt: true,
+});
+
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+export type Achievement = typeof achievements.$inferSelect;
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(userProfiles, {
@@ -137,6 +175,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   medicationDoses: many(medicationDoses),
   moodEntries: many(moodEntries),
   weightEntries: many(weightEntries),
+  streaks: many(streaks),
+  achievements: many(achievements),
 }));
 
 export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
@@ -170,6 +210,20 @@ export const moodEntriesRelations = relations(moodEntries, ({ one }) => ({
 export const weightEntriesRelations = relations(weightEntries, ({ one }) => ({
   user: one(users, {
     fields: [weightEntries.userId],
+    references: [users.id],
+  }),
+}));
+
+export const streaksRelations = relations(streaks, ({ one }) => ({
+  user: one(users, {
+    fields: [streaks.userId],
+    references: [users.id],
+  }),
+}));
+
+export const achievementsRelations = relations(achievements, ({ one }) => ({
+  user: one(users, {
+    fields: [achievements.userId],
     references: [users.id],
   }),
 }));
