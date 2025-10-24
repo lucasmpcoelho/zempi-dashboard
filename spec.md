@@ -1,840 +1,446 @@
-# Zempi Dashboard - Product Specification & Roadmap
+# Zempi Product Specification
 
-**Version:** 1.0
-**Last Updated:** 2025-10-21
-**Status:** In Progress
-
----
-
-## 🎯 Vision Statement
-
-Transform the Zempi dashboard into an indispensable tool that helps GLP-1 users **preserve muscle mass**, **manage side effects**, and **optimize treatment outcomes** through personalized insights and intelligent visualizations.
+**Version:** 2.0
+**Last Updated:** 2025-10-24
+**Status:** Strategic Planning Phase
 
 ---
 
-## 🧠 User Personas & Pain Points
+## Executive Summary
 
-### Primary Persona: "Maria, the Concerned Professional"
-- **Age:** 35-45
-- **Goal:** Lose 15-20kg while maintaining muscle and energy
-- **Medication:** Ozempic 0.5mg → 1.0mg (titrating)
-- **Top Fears:**
-  1. Losing muscle mass (sagging skin, weakness)
-  2. Unpredictable side effects (nausea ruining workday)
-  3. Spending R$800-1200/month without optimal results
-  4. Regaining weight after stopping treatment
-
-### Critical User Needs
-1. **Know if I'm eating enough protein** (daily tracking + trend)
-2. **Understand what's normal** (am I losing weight too fast/slow?)
-3. **Manage side effects** (when do they happen? what triggers them?)
-4. **Feel confident in dose changes** (data to discuss with doctor)
-5. **Stay motivated** (see progress beyond the scale)
+Zempi is Brazil's first WhatsApp-native GLP-1 companion that ensures weight loss results are **permanent** by protecting muscle mass and building lasting habits. This specification outlines the product vision aligned with our strategic roadmap and four core value propositions.
 
 ---
 
-## 📊 Success Metrics
+## Vision & Core Promise
 
-### Engagement Metrics
-- **DAU/MAU Ratio:** Target >40% (daily active users)
-- **Meal Logging Frequency:** 4+ meals/week per user
-- **Protein Goal Achievement:** >60% of users hit 1.6g/kg 4+ days/week
+**CORE PROMISE:**
+"Zempi ensures GLP-1 weight loss is permanent - protecting muscle and building habits that last beyond medication."
 
-### Health Outcome Metrics
-- **Average Protein Intake:** >1.4g/kg across user base
-- **Healthy Weight Loss Velocity:** 80% of users losing 0.5-1kg/week
-- **Side Effect Management:** Reduction in reported severity over time
-
-### Retention Metrics
-- **D7 Retention:** >70%
-- **D30 Retention:** >50%
-- **Feature Adoption:** >40% use insights/charts weekly
+**Portuguese:** "Zempi garante que sua perda de peso com GLP-1 seja permanente - protegendo seus músculos e criando hábitos que duram além da medicação."
 
 ---
 
-## 🗺️ Roadmap Overview
+## Four Value Propositions
 
-### Phase 1: Foundation (Weeks 1-2) - **IN PROGRESS**
-- [x] Tab-based navigation (Apple Health style)
-- [x] Basic panels (Overview, Protein, Wellness, Treatment)
-- [ ] Weight Progress Chart with predictions
-- [ ] Smart Alerts system
-- [ ] Weekly Summary cards
+### 1. PROTECT YOUR MUSCLE
 
-### Phase 2: Intelligence (Weeks 3-4)
-- [ ] Muscle Preservation Dashboard
-- [ ] Side Effects correlation tracking
-- [ ] Meal suggestions engine
-- [ ] Quick log improvements
+**User Outcome:** Lose fat, not muscle. Avoid sagging skin, weakness, and "Ozempic face"
 
-### Phase 3: Engagement (Weeks 5-6)
-- [ ] Streaks & achievements
-- [ ] Progress milestones
-- [ ] Month-over-month comparisons
+**The Problem:**
+- 25-40% of GLP-1 weight loss is muscle mass
+- No competitor quantifies this risk daily
+- Users fear sagging skin, weakness, premature aging
 
-### Phase 4: Community & Optimization (Weeks 7-8)
-- [ ] Anonymous community insights
-- [ ] Dosage decision support
-- [ ] Lab results integration
+**Zempi's Solution:**
+- Daily Muscle Risk Score (Green/Amber/Red gauge)
+- Protein Optimization (research-backed 1.6g/kg targets)
+- Smart Protein Alerts via WhatsApp
+- Body Composition Tracking
+- Protein × Weight Correlation Charts
+
+**Competitive Moat:** High (6-9 months) - Unique algorithm
 
 ---
 
-## 📋 Detailed Feature Specifications
+### 2. BUILD LASTING HABITS
+
+**User Outcome:** Keep weight off when medication ends (prevent 67% regain rate)
+
+**The Problem:**
+- GLP-1 is temporary (6-12 months), results must be permanent
+- 67% regain 2/3 of weight within 1 year after stopping
+- Current apps build tracking habits, not behavioral habits
+
+**Zempi's Solution:**
+- Habit Formation Framework (weekly reflections)
+- Gamification Tools (protein streaks, achievement badges)
+- Personal Habit Template (analyzes 30 days of data)
+- Maintenance Mode (for users stopping medication)
+
+**Competitive Moat:** Medium-High (6-9 months) - Behavioral psychology expertise required
 
 ---
 
-## PHASE 1: Foundation of Value
+### 3. UNDERSTAND YOUR PATTERNS
 
-### Feature 1.1: Weight Progress Chart 📈
+**User Outcome:** Make informed decisions, reduce anxiety, optimize treatment
 
-**Status:** Not Started
-**Priority:** P0 (Critical)
-**Effort:** 3 days
+**The Problem:**
+- Users don't know WHY or WHEN side effects happen
+- Doctor appointments are brief - forget details
+- "Am I normal?" anxiety from comparing to outliers
 
-#### User Story
-> "As a GLP-1 user, I want to see my weight loss trend with predictions so I can feel confident I'm on track and know when I'll reach my goal."
+**Zempi's Solution:**
+- Side Effect Correlation Engine (pattern detection)
+- Anonymous Benchmarking (privacy-first)
+- Dosage Decision Support (data for doctor conversations)
+- PDF Reports for Doctor Visits
 
-#### Requirements
-
-**Functional:**
-- Display last 90 days of weight data as line chart
-- 7-day moving average trend line (smoothed, prominent)
-- "Healthy zone" shading (0.5-1kg/week loss rate)
-- Visual milestones at 5%, 10%, 15%, 20% weight loss
-- Goal line (horizontal) with date prediction
-- Tap data point to see details (date, weight, change from previous)
-
-**Data Calculations:**
-```typescript
-// Moving average (7-day)
-movingAvg = sum(last7Days) / 7
-
-// Prediction algorithm
-weeklyRate = (currentWeight - weight4WeeksAgo) / 4
-weeksToGoal = (currentWeight - goalWeight) / weeklyRate
-predictedDate = today + (weeksToGoal * 7 days)
-
-// Healthy zone bounds
-upperBound = startWeight - (weeks * 0.5kg)
-lowerBound = startWeight - (weeks * 1.0kg)
-```
-
-**UI Components:**
-- Chart library: Recharts (already in use)
-- Colors: Teal for trend line, green zone for healthy range
-- Typography: JetBrains Mono for numbers
-- Responsive: Full width on mobile, max-w-4xl on desktop
-
-**Edge Cases:**
-- Not enough data (<7 days): Show message "Keep tracking to see trends"
-- Weight gain weeks: Show in amber, don't predict date
-- Goal already achieved: Show celebration, suggest new goal
-
-**Technical Notes:**
-- Component: `/client/src/components/charts/WeightProgressChart.tsx`
-- Data source: `/api/weight?startDate=X&endDate=Y`
-- Cache: React Query with 5min staleTime
-- Animation: Smooth line draw on mount (1s duration)
+**Competitive Moat:** Medium-High (6-9 months) - Pattern detection requires data science
 
 ---
 
-### Feature 1.2: Smart Alerts System 🔔
+### 4. FEEL SUPPORTED
 
-**Status:** Not Started
-**Priority:** P0 (Critical)
-**Effort:** 4 days
+**User Outcome:** Combat loneliness, reduce shame, stay motivated
 
-#### User Story
-> "As a GLP-1 user, I want personalized alerts about my patterns so I can take action before small issues become big problems."
+**The Problem:**
+- 53% feel "getting healthy is lonely"
+- Many hide medication use from family/friends
+- Brazil is collectivist culture - community matters
 
-#### Alert Types & Triggers
+**Zempi's Solution:**
+- Community Insights Panel (anonymous aggregated data)
+- Warm, Brazilian Tone (encouraging, friendly)
+- WhatsApp-Native Support (90% message read rate)
+- Beta WhatsApp Group (direct line to founder)
 
-**1. Protein Alerts (Daily Check)**
-```typescript
-// Low protein streak
-if (last3Days.every(day => day.proteinGPerKg < 1.4)) {
-  alert = {
-    type: 'warning',
-    title: 'Proteína baixa por 3 dias',
-    message: 'Sua proteína está abaixo de 1.4g/kg. Risco de perda muscular.',
-    action: 'Ver recomendações de refeições',
-    priority: 'high'
-  }
-}
-
-// Excellent streak
-if (last7Days.every(day => day.proteinGPerKg >= 1.6)) {
-  alert = {
-    type: 'celebration',
-    title: '🔥 7 dias de proteína excelente!',
-    message: 'Você está protegendo seus músculos como um pro.',
-    action: null,
-    priority: 'medium'
-  }
-}
-```
-
-**2. Weight Loss Alerts (Weekly Check)**
-```typescript
-// Too fast
-if (weeklyLossRate > 1.2) {
-  alert = {
-    type: 'warning',
-    title: 'Perda de peso muito rápida',
-    message: 'Você está perdendo >1kg/semana. Considere falar com médico.',
-    action: 'Agendar consulta',
-    priority: 'high'
-  }
-}
-
-// Plateau (3+ weeks)
-if (last3Weeks.stdDev < 0.3) {
-  alert = {
-    type: 'info',
-    title: 'Peso estável há 3 semanas',
-    message: 'Pode ser hora de discutir aumento de dose.',
-    action: 'Ver histórico de doses',
-    priority: 'medium'
-  }
-}
-```
-
-**3. Side Effect Patterns (When new symptom logged)**
-```typescript
-// Dosing pattern
-const symptomDaysPostDose = symptoms
-  .filter(s => s.type === 'nausea')
-  .map(s => daysSinceDose(s.date))
-
-if (symptomDaysPostDose.filter(d => d <= 2).length > 3) {
-  alert = {
-    type: 'insight',
-    title: 'Padrão detectado: Náusea',
-    message: 'Você geralmente sente náusea 1-2 dias após dose.',
-    action: 'Ajustar refeições nesses dias',
-    priority: 'low'
-  }
-}
-```
-
-**UI Components:**
-- Alert Cards in OverviewPanel (top position)
-- Icon + color coded by type (warning=amber, celebration=green, insight=teal)
-- Dismissible (but re-appears if condition persists)
-- Action button (primary CTA)
-
-**Technical Implementation:**
-- Background job: `/server/jobs/calculateAlerts.ts` (runs daily at 6am)
-- Storage: `alerts` table with `userId`, `type`, `dismissed`, `createdAt`
-- API: `GET /api/alerts` (returns active, undismissed alerts)
-- Component: `/client/src/components/alerts/SmartAlert.tsx`
+**Competitive Moat:** Medium (3-6 months) - Requires user base
 
 ---
 
-### Feature 1.3: Weekly Summary Card 📊
+## Product Architecture
 
-**Status:** Not Started
-**Priority:** P1 (High)
-**Effort:** 2 days
+### Dual-Interface Design
 
-#### User Story
-> "As a GLP-1 user, I want a weekly summary of my progress so I can feel accomplished and know what to improve."
+**WhatsApp Bot (Primary Interface):**
+- Conversational AI for effortless daily tracking
+- Meal logging, weight tracking, symptom logging
+- Proactive alerts and coaching
+- Q&A with memory and context
+- Voice note and photo support
 
-#### Requirements
+**Dashboard (Visual Analytics Interface):**
+- Charts, trends, and visualizations
+- Muscle preservation score display
+- Pattern insights and correlations
+- Doctor reports and exports
+- Gamification progress tracking
 
-**Summary Metrics (Monday-Sunday):**
-1. **Weight Change:** `startWeight - endWeight` with trend arrow
-2. **Protein Performance:**
-   - Days hit goal (>1.6g/kg)
-   - Average g/kg
-   - Streak status
-3. **Meal Consistency:** Days with 3+ meals logged
-4. **Side Effects:** Count of symptom-free days
-5. **Medication Adherence:** Dose taken on time (if scheduled)
-
-**Card Design:**
-```
-┌─────────────────────────────────────┐
-│ 📅 Semana de 14-20 Out              │
-├─────────────────────────────────────┤
-│ ⚖️  Peso: -0.8kg ↓                  │
-│ 💪 Proteína: 5/7 dias excelente     │
-│ 🍽️  Refeições: 6/7 dias registrados │
-│ 😊 Bem-estar: 6 dias sem sintomas   │
-├─────────────────────────────────────┤
-│ "Ótima semana! Continue assim."    │
-└─────────────────────────────────────┘
-```
-
-**Auto-generated Insight:**
-```typescript
-function generateWeeklySummary(data: WeekData): string {
-  const score = calculateWeekScore(data) // 0-100
-
-  if (score >= 80) return "Semana excelente! Você está no caminho certo. 🌟"
-  if (score >= 60) return "Boa semana! Pequenos ajustes podem melhorar ainda mais."
-  if (score >= 40) return "Semana desafiadora. O que podemos ajustar?"
-  return "Vamos recomeçar esta semana juntos. Você consegue!"
-}
-```
-
-**Technical Notes:**
-- Appears in OverviewPanel, top position (after alerts)
-- Updates every Monday at 00:00
-- Cached for the week (React Query)
-- Tap to expand full details
+**Why This Works:**
+- WhatsApp: Where Brazilians already spend 3+ hours/day (99% penetration)
+- Dashboard: When users need visual analysis and deeper insights
+- Both interfaces share the same intelligence layer and database
 
 ---
 
-## PHASE 2: Intelligence Layer
+## 90-Day Execution Plan
 
-### Feature 2.1: Muscle Preservation Dashboard 💪
+### Phase 1: Foundation Enhancement (Weeks 1-2)
 
-**Status:** Not Started
-**Priority:** P0 (Critical)
-**Effort:** 5 days
+**WhatsApp Enhancements:**
+- Weight logging (natural language parsing)
+- Symptom logging (keyword detection)
+- Save to Supabase with confirmations
 
-#### User Story
-> "As a GLP-1 user, I want to understand if I'm losing fat or muscle so I can adjust my protein and exercise."
+**Dashboard Foundation:**
+- Shell with tab navigation (Overview, Muscle, Progress, Treatment)
+- Data sync layer (TanStack Query + Supabase real-time)
+- Mobile-first responsive design
 
-#### Components
-
-**1. Protein × Weight Correlation Chart**
-- Dual-axis chart: Weight (left Y), Protein g/kg (right Y)
-- Visual correlation: When protein drops, does weight loss accelerate?
-- Color zones: Green when protein >1.6, amber when 1.4-1.6, red when <1.4
-
-**2. Body Composition Estimator**
-```typescript
-// Algorithm based on protein intake + weight loss rate
-function estimateComposition(data: UserData) {
-  const avgProtein = calculateAvgProtein(last30Days)
-  const weightLossRate = calculateWeeklyRate()
-
-  // Research-based heuristic
-  let muscleRetentionRate = 0.85 // base
-  if (avgProtein >= 1.6) muscleRetentionRate = 0.95
-  if (avgProtein < 1.2) muscleRetentionRate = 0.70
-
-  const totalLoss = initialWeight - currentWeight
-  const estimatedMuscleLoss = totalLoss * (1 - muscleRetentionRate)
-  const estimatedFatLoss = totalLoss - estimatedMuscleLoss
-
-  return { muscle: estimatedMuscleLoss, fat: estimatedFatLoss }
-}
-```
-
-**3. Risk Indicators**
-- "Zona de Risco" badge when protein <1.4g/kg for 3+ days
-- Recommendations: Increase protein, add resistance training
+**Intelligence Layer:**
+- Muscle Preservation Score Algorithm (Supabase function)
+- Accessible via both WhatsApp and Dashboard
 
 ---
 
-### Feature 2.2: Side Effects Intelligence 🤢
+### Phase 2: Intelligence & Visualization (Weeks 3-4)
 
-**Status:** Not Started
-**Priority:** P1 (High)
-**Effort:** 4 days
+**WhatsApp Proactive Alerts:**
+- Smart protein alerts (low streak, excellent streak)
+- Streak tracking (consecutive days hitting goals)
+- Daily cron job at 9 PM Brazil time
 
-#### User Story
-> "As a GLP-1 user, I want to know what triggers my side effects so I can avoid them."
+**Dashboard Visualizations:**
+- Weight Progress Chart (90 days, 7-day moving average, healthy zone)
+- Muscle Score Gauge (circular gauge, color-coded)
+- Side Effect Calendar (heatmap with patterns)
 
-#### Components
-
-**1. Side Effects Timeline**
-- Visual calendar showing: 💉 Dose day, 😕 Symptom days
-- Patterns highlighted: "Náusea geralmente 2 dias pós-dose"
-
-**2. Trigger Correlation**
-```typescript
-// Analyze: meal timing, food types, hydration
-correlations = {
-  'high-fat meals': {
-    correlation: 0.78,
-    insight: 'Gordura alta → +78% chance náusea'
-  },
-  'dose day': {
-    correlation: 0.45,
-    insight: 'Sintomas mais comuns dia da dose'
-  },
-  'low water intake': {
-    correlation: 0.62,
-    insight: 'Baixa água → constipação'
-  }
-}
-```
-
-**3. Personalized Tips**
-- "Evite refeições gordurosas 2 dias após dose"
-- "Hidrate mais nos dias de dose"
-- "Refeições menores reduzem náusea em 60% dos casos"
+**Pattern Detection:**
+- Basic pattern algorithm (dose timing correlations)
+- Insights delivered to both interfaces
 
 ---
 
-### Feature 2.3: Intelligent Meal Suggestions 🍽️
+### Phase 3: Advanced Features & Polish (Weeks 5-6)
 
-**Status:** Not Started
-**Priority:** P1 (High)
-**Effort:** 3 days
+**WhatsApp Advanced Logging:**
+- Photo meal logging (Clarifai API)
+- Voice note support (Whisper API)
+- Symptom-aware meal suggestions
 
-#### User Story
-> "As a GLP-1 user with low appetite, I want meal suggestions that are high-protein but small/easy so I can hit my goals even when I don't feel like eating."
+**Dashboard Polish:**
+- Weekly summary card (metrics + insights)
+- Achievement badges (unlock triggers)
+- Protein timeline view (30-day bar chart)
 
-#### Algorithm
-```typescript
-function suggestMeal(context: UserContext): Meal[] {
-  const {
-    proteinNeeded,      // remaining protein for today
-    currentSymptoms,    // nausea, fatigue, etc
-    foodPreferences,    // vegetarian, no lactose, etc
-    timeOfDay,          // breakfast, lunch, dinner, snack
-    recentMeals         // avoid repetition
-  } = context
-
-  // Filter meal database
-  let candidates = mealDatabase
-    .filter(m => m.protein >= proteinNeeded * 0.4)  // Provides significant protein
-    .filter(m => !hasRestrictedIngredients(m, foodPreferences))
-    .filter(m => !recentMeals.includes(m.id))  // Variety
-
-  // Adjust for symptoms
-  if (currentSymptoms.includes('nausea')) {
-    candidates = candidates
-      .filter(m => m.fats < 15)  // Low fat
-      .filter(m => m.portionSize === 'small')  // Small portions
-      .sort((a, b) => a.blandness - b.blandness)  // Bland first
-  }
-
-  // Return top 3
-  return candidates.slice(0, 3)
-}
-```
-
-**UI:**
-- Card in ProteinPanel: "Faltam 45g de proteína hoje"
-- 3 suggestions with: photo, macros, "Log este prato" button
-- "Não gostei" → learns preferences
+**Advanced Intelligence:**
+- Symptom-aware meal suggestions
+- Basic dosage insights (plateau detection)
 
 ---
 
-## PHASE 3: Engagement & Gamification
+### Phase 4: Integration, Beta & Launch (Weeks 7-12)
 
-### Feature 3.1: Streaks & Achievements 🔥
+**Integration (Weeks 7-8):**
+- Two-way sync (WhatsApp ↔ Dashboard)
+- PDF report generator for doctors
+- Analytics instrumentation (Mixpanel)
 
-**Status:** Not Started
-**Priority:** P2 (Medium)
-**Effort:** 3 days
+**Beta Testing (Weeks 9-10):**
+- Recruit 30-50 users (WhatsApp groups, referrals)
+- Beta WhatsApp group for feedback
+- Monitor D7 retention and engagement metrics
 
-#### Streaks Tracked
-1. **Protein Streak:** Consecutive days hitting 1.6g/kg
-2. **Logging Streak:** Consecutive days with 3+ meals logged
-3. **Medication Adherence:** Consecutive doses on time
-
-#### Achievements (Badges)
-- 🏆 "First Week Warrior" - 7 days of tracking
-- 💪 "Muscle Defender" - 30 days of 1.6g/kg protein
-- 📉 "First 5kg" - Lost 5kg
-- 🎯 "Goal Crusher" - Reached target weight
-- 🔥 "Hot Streak" - 14 days protein streak
-
-#### UI
-- Streak counter in header (🔥 12 days)
-- Badge showcase in profile
-- Celebration animation when milestone hit
-- Share to WhatsApp status (optional)
+**Iteration & Launch (Weeks 11-12):**
+- Fix P0 bugs from beta
+- Address top UX issues
+- Soft launch in Brazilian GLP-1 communities
 
 ---
 
-### Feature 3.2: Progress Milestones 🎉
+## Success Metrics (90 Days)
 
-**Status:** Not Started
-**Priority:** P2 (Medium)
-**Effort:** 2 days
+### Value Proposition Alignment
 
-#### Milestone Triggers
-```typescript
-milestones = [
-  {
-    id: '5kg',
-    threshold: (initial - current) >= 5,
-    title: 'Primeiros 5kg!',
-    message: 'Você perdeu 5kg. Isso é aproximadamente 35.000 calorias!',
-    celebration: 'confetti'
-  },
-  {
-    id: '10percent',
-    threshold: ((initial - current) / initial) >= 0.10,
-    title: '10% mais leve!',
-    message: 'Você eliminou 10% do peso inicial. Incrível!',
-    celebration: 'fireworks'
-  },
-  {
-    id: 'goal',
-    threshold: current <= goal,
-    title: '🎯 Meta Alcançada!',
-    message: 'Parabéns! Hora de manter e celebrar.',
-    celebration: 'fullscreen'
-  }
-]
-```
+**VP1: PROTECT YOUR MUSCLE**
+- 60%+ users hit protein goals 4+ days/week
+- 70%+ achieve 7-day protein streak at least once
+- Muscle score viewed 3+/week by 80%+ users
 
-#### Celebration UX
-- Full-screen overlay with Lottie animation
-- Shareable card (download PNG)
-- "Continue sua jornada" CTA
+**VP2: BUILD LASTING HABITS**
+- 50%+ create personal habit template (Week 5-6)
+- 60%+ complete weekly reflection prompts 2+ times
+- 70%+ maintain logging consistency (4+ days/week)
+
+**VP3: UNDERSTAND YOUR PATTERNS**
+- 30%+ view community insights panel weekly
+- 30%+ generate PDF report for doctor visit
+- Pattern insights surfaced for 80%+ users
+
+**VP4: FEEL SUPPORTED**
+- NPS score >35
+- "Feel supported" survey score >4/5
+- 30% viral coefficient (share bot with friends)
+
+**Overall Business Metrics:**
+- 500+ active users conversing with WhatsApp bot daily
+- 50%+ D7 retention rate
+- Dashboard accessed 1-2x/week
+- R$2,500 MRR (85 paid users at R$29.90/month)
 
 ---
 
-### Feature 3.3: Month-over-Month Comparison 📊
-
-**Status:** Not Started
-**Priority:** P2 (Medium)
-**Effort:** 2 days
-
-#### Metrics Compared
-```
-Este Mês vs Mês Passado
-─────────────────────────
-Peso perdido: 3.2kg vs 2.8kg (+14%) ✅
-Proteína média: 1.7g/kg vs 1.5g/kg (+13%) ✅
-Dias sem sintomas: 22 vs 18 (+22%) ✅
-Refeições registradas: 89 vs 76 (+17%) ✅
-```
-
-#### UI
-- Toggle in TreatmentPanel
-- Bar charts for each metric
-- Green/red arrows for improvement/regression
-- Insights: "Você melhorou em 4/4 métricas este mês!"
-
----
-
-## PHASE 4: Community & Advanced Features
-
-### Feature 4.1: Anonymous Community Insights 👥
-
-**Status:** Not Started
-**Priority:** P3 (Nice-to-have)
-**Effort:** 5 days
-
-#### Privacy-First Approach
-- All data aggregated and anonymized
-- No personal information shared
-- User can opt-out completely
-
-#### Insights Shown
-```typescript
-communityInsights = {
-  medication: "Ozempic 1.0mg",
-  insights: [
-    {
-      metric: "Protein Intake",
-      userValue: 1.7,
-      community: {
-        avg: 1.4,
-        percentile: 78,  // User is in top 22%
-        message: "Você está acima de 78% dos usuários!"
-      }
-    },
-    {
-      metric: "Weight Loss Rate",
-      userValue: 0.7,
-      community: {
-        avg: 0.6,
-        healthyRange: [0.5, 1.0],
-        message: "Você está no ritmo saudável (0.5-1kg/sem)"
-      }
-    }
-  ]
-}
-```
-
-#### Social Features
-- "Top 3 receitas da comunidade"
-- "90% dos usuários reportam náusea dias 1-2 pós-dose"
-- Benchmarking without competition
-
----
-
-### Feature 4.2: Dosage Decision Support 💊
-
-**Status:** Not Started
-**Priority:** P1 (High)
-**Effort:** 4 days
-
-#### User Story
-> "As a GLP-1 user, I want data-driven insights about my current dose so I can have informed conversations with my doctor about titration."
-
-#### Analysis Factors
-```typescript
-function analyzeDoseEffectiveness(user: User): DoseReport {
-  const currentDose = user.currentDose
-  const weeksOnDose = weeksSince(user.lastDoseChange)
-
-  const indicators = {
-    weightLoss: {
-      last4Weeks: calculateWeightLoss(4),
-      status: weightLossStatus(),  // "good", "plateau", "too-fast"
-      recommendation: null
-    },
-    sideEffects: {
-      severity: calculateAvgSeverity(),
-      frequency: calculateFrequency(),
-      status: sideEffectStatus(),  // "manageable", "severe", "minimal"
-      recommendation: null
-    },
-    timeOnDose: {
-      weeks: weeksOnDose,
-      status: weeksOnDose >= 4 ? "ready" : "wait",  // Min 4 weeks per dose
-      recommendation: null
-    }
-  }
-
-  // Decision logic
-  if (
-    indicators.weightLoss.status === "plateau" &&
-    indicators.sideEffects.status !== "severe" &&
-    indicators.timeOnDose.status === "ready"
-  ) {
-    return {
-      recommendation: "consider-increase",
-      confidence: "medium",
-      message: "Dados sugerem conversar com médico sobre aumento de dose",
-      supportingData: indicators
-    }
-  }
-
-  // ... more logic
-}
-```
-
-#### UI Dashboard
-```
-Análise da Dose Atual
-─────────────────────
-Dose: 0.5mg | Há 6 semanas
-
-✅ Peso estável (últimas 2 sem)
-✅ Efeitos colaterais diminuíram 60%
-⏰ Tempo mínimo na dose atingido
-
-💡 Recomendação: Considere discutir
-   aumento de dose com seu médico.
-
-[Ver histórico completo]  [Baixar relatório PDF]
-```
-
----
-
-### Feature 4.3: Lab Results Integration 🧪
-
-**Status:** Not Started
-**Priority:** P3 (Nice-to-have)
-**Effort:** 6 days
-
-#### Supported Biomarkers
-- HbA1c (glycemic control)
-- Fasting glucose
-- Lipid panel (cholesterol, triglycerides, HDL, LDL)
-- Liver enzymes (ALT, AST)
-- Thyroid (TSH, T3, T4)
-
-#### Features
-- Manual entry or photo upload (OCR)
-- Trend over time
-- Flag out-of-range values
-- Celebrate improvements: "HbA1c melhorou 1.2% desde início!"
-
----
-
-## 🎨 UX Principles
-
-### Visual Design System
-- **Colors:** Teal (medical trust), Green (success), Amber (warning), Red (alert)
-- **Typography:** Inter (UI), JetBrains Mono (data/numbers)
-- **Spacing:** 8px grid system
-- **Elevation:** 3 levels (flat, subtle, prominent)
-
-### Animation Guidelines
-- **Purpose-driven:** Only animate to provide feedback or guide attention
-- **Subtle:** Max 300ms duration, ease-out curves
-- **Celebrations:** Exception - full animations for milestones
-- **Loading:** Skeleton screens, no spinners
-
-### Accessibility
-- **WCAG 2.1 AA** compliance minimum
-- Keyboard navigation for all interactions
-- Screen reader optimized (ARIA labels)
-- High contrast mode support
-- Font scaling support (up to 200%)
-
----
-
-## 🔧 Technical Architecture
+## Technical Architecture
 
 ### Frontend Stack
-- **Framework:** React 18 + TypeScript
-- **State:** TanStack Query (server state) + Zustand (UI state)
-- **Styling:** TailwindCSS + shadcn/ui
-- **Charts:** Recharts
-- **Animations:** Framer Motion
+- Framework: React 18 + TypeScript
+- State: TanStack Query (server state) + Zustand (UI state)
+- Styling: TailwindCSS + shadcn/ui
+- Charts: Recharts
+- Animations: Framer Motion
 
 ### Backend Stack
-- **Runtime:** Node.js (Express)
-- **Database:** PostgreSQL (Supabase)
-- **ORM:** Drizzle
-- **Jobs:** Node-cron (for alerts, summaries)
-- **Storage:** Supabase Storage (for photos, lab results)
+- Database: PostgreSQL via Supabase
+- ORM: Drizzle (type-safe queries)
+- Auth: Supabase Auth (linked to WhatsApp users)
+- Storage: Supabase Storage (photos, PDFs)
+- Real-time: Supabase subscriptions
 
-### API Design Patterns
-```typescript
-// Consistent response format
-{
-  data: T | null,
-  error: { code: string, message: string } | null,
-  meta: { page, total, etc } | null
-}
+### WhatsApp Bot
+- Automation: N8N workflows (MVP)
+- NLP: OpenAI/Anthropic LLM
+- Migration Path: Node.js at 200+ DAU
 
-// Standard endpoints
-GET    /api/{resource}              // List
-GET    /api/{resource}/:id          // Get one
-POST   /api/{resource}              // Create
-PATCH  /api/{resource}/:id          // Update
-DELETE /api/{resource}/:id          // Delete
-GET    /api/{resource}/insights     // Computed data
-```
+### APIs & Integrations
+- Nutrition Data: Edamam API
+- Photo Recognition: Clarifai Food API
+- Speech-to-Text: OpenAI Whisper API
+- AI/LLM: OpenAI GPT-4 or Anthropic Claude
 
-### Data Models (Key Tables)
+---
+
+## Intelligence Layer (Shared)
+
+### Supabase Functions
+
+**calculate_muscle_score(user_id)**
+- Returns: JSON with score (0-100), status (safe/caution/high-risk), factors
+- Algorithm: 70% weight on protein g/kg, 30% on weight loss rate
+- Access: WhatsApp (conversational) + Dashboard (visual gauge)
+
+**detect_symptom_patterns(user_id)**
+- Returns: JSON with patterns found, frequency, recommendations
+- Patterns: Dose timing, food triggers, time of day
+- Access: WhatsApp (proactive message) + Dashboard (insights card)
+
+**generate_weekly_summary(user_id)**
+- Returns: JSON with metrics, score (0-100), auto-generated message
+- Metrics: Weight change, protein performance, consistency, wellness
+- Access: WhatsApp (Monday morning) + Dashboard (summary card)
+
+---
+
+## Data Models (Key Tables)
 
 ```sql
 -- Core tracking
-users (id, username, createdAt)
-user_profiles (userId, name, medication, dose, weight, goalWeight, ...)
-meals (id, userId, date, time, protein, calories, carbs, fats, ...)
-weight_entries (id, userId, date, weight)
+users (id, username, email, createdAt)
+user_profiles (userId, name, medication, dose, startWeight, currentWeight, goalWeight)
+meals (id, userId, date, time, protein, calories, carbs, fats, photoUrl)
+weight_entries (id, userId, date, weight, source: 'manual' | 'healthkit' | 'whatsapp')
 mood_entries (id, userId, date, mood, symptoms[], notes)
 medication_doses (id, userId, scheduledDate, completed, completedAt)
 
 -- Intelligence layer
 alerts (id, userId, type, title, message, dismissed, createdAt)
-insights (id, userId, category, content, createdAt)
+insights (id, userId, category, content, metadata, createdAt)
 achievements (id, userId, badgeId, unlockedAt)
-streaks (id, userId, type, currentStreak, longestStreak)
+streaks (id, userId, type, currentStreak, longestStreak, lastUpdated)
 
--- Future
-lab_results (id, userId, date, biomarker, value, unit)
-meal_templates (id, userId, name, protein, calories, ...)
+-- Meal database
+meal_templates (id, name, protein, calories, portionSize, blandnessScore)
+
+-- Premium
+subscriptions (id, userId, tier, status, startDate, endDate, platform)
 ```
 
 ---
 
-## 🚀 Implementation Priorities
+## UX Principles
 
-### This Week (P0 - Must Have)
-1. ✅ Tab navigation + panels structure
-2. ⬜ Weight Progress Chart
-3. ⬜ Smart Alerts (protein warnings)
-4. ⬜ Weekly Summary
+### Design System
+- Colors: Teal (trust), Green (success), Amber (warning), Red (alert)
+- Typography: Inter (UI), JetBrains Mono (numbers)
+- Spacing: 8px grid system
+- Mobile-first responsive design
 
-### Next 2 Weeks (P1 - Should Have)
-5. ⬜ Muscle Preservation Dashboard
-6. ⬜ Side Effects intelligence
-7. ⬜ Meal suggestions
-8. ⬜ Quick log improvements
+### WhatsApp Tone (Brazilian Portuguese)
+- Warm, encouraging, friendly
+- Celebrations with emoji
+- "Você não está sozinha" messaging
+- Não seja fria/clínica demais
 
-### Month 2 (P2 - Nice to Have)
-9. ⬜ Streaks & achievements
-10. ⬜ Progress milestones
-11. ⬜ Month-over-month
-
-### Future (P3 - Deferred)
-12. ⬜ Community insights
-13. ⬜ Lab results
-14. ⬜ Advanced dosage support
+### Accessibility
+- WCAG 2.1 AA compliance
+- Keyboard navigation
+- Screen reader optimized
+- High contrast mode support
 
 ---
 
-## 📝 Open Questions & Decisions Needed
+## Competitive Advantages
 
-### Design Decisions
-- [ ] Should we show predicted weight loss date prominently? (Could create anxiety if not met)
-- [ ] How aggressive should protein alerts be? (Balance between helpful and nagging)
-- [ ] Should achievements be shareable outside app? (Privacy vs social proof)
+### WhatsApp-Native (12+ month moat)
+- ZERO global competitors with WhatsApp-first GLP-1 tracking
+- Cultural fit: 99% penetration in Brazil
+- 10x lower friction than traditional apps
+- Viral potential (share bot link, no download barrier)
 
-### Technical Decisions
-- [ ] Run background jobs server-side or client-side? (Lean toward server for consistency)
-- [ ] How to handle timezone differences for "daily" calculations?
-- [ ] Cache strategy for charts (static until new data vs real-time)?
+### Muscle Preservation Intelligence (6-9 month moat)
+- No competitor quantifies muscle loss risk daily
+- Research-backed algorithm
+- Addresses #1 user fear
 
-### Product Decisions
-- [ ] Freemium vs paid? Which features are premium?
-- [ ] Integration with WhatsApp bot - how deep?
-- [ ] Medical disclaimer language for all recommendations?
+### Habit Formation Focus (6-9 month moat)
+- Personal habit template (unique)
+- Maintenance mode for post-medication
+- Behavioral psychology expertise
+
+### User Autonomy (12+ month moat)
+- Data ownership and transparency
+- Doctor reports (empower, not prescribe)
+- Privacy-first community insights
 
 ---
 
-## 🔗 References & Inspiration
+## Go-to-Market Strategy
 
-### Apps Studied
-- **Hims/Hers:** Onboarding, medical credibility, premium feel
-- **Calibrate:** Structured program, metabolic focus, coaching
-- **Found:** Affordable, community-driven, chat-first
-- **MyFitnessPal:** Meal logging UX, database of foods
-- **Apple Health:** Visual hierarchy, data visualization, privacy-first
+### Positioning Statement
 
-### Research Papers
-- Protein requirements during weight loss (1.6g/kg recommendation)
+For GLP-1 users in Brazil who fear losing muscle mass, dread regaining weight after stopping medication, and feel alone in their health journey, Zempi is a WhatsApp-native AI coach that ensures your weight loss is permanent by protecting your muscle with daily risk scoring, building lasting habits through behavioral coaching, helping you understand your body's unique patterns, and providing supportive community insights—all delivered in WhatsApp where you already spend 3+ hours/day.
+
+### Primary Tagline
+**"Perca gordura, não músculo. Resultados que duram para sempre."**
+(Lose fat, not muscle. Results that last forever.)
+
+### Acquisition Channels
+1. WhatsApp Groups (organic seeding)
+2. Doctor Referrals (endocrinologists)
+3. Beta Testers as Ambassadors (30% viral coefficient target)
+4. GLP-1 Facebook Groups (Brazil)
+
+---
+
+## Risks & Mitigation
+
+### Technical Risks
+- **N8N Scalability:** Monitor performance, migrate to Node.js at 200+ DAU
+- **WhatsApp API Compliance:** Follow guidelines strictly, have SMS backup
+
+### Product Risks
+- **Portuguese NLP Accuracy:** Use GPT-4/Claude, maintain keyword database, always confirm
+- **Low User Adoption:** WhatsApp-first removes barriers, generous free tier
+
+### Market Risks
+- **Competitor Copies WhatsApp:** Move fast, build loyalty, 12+ month moat
+- **Regulatory Issues:** Clear disclaimers, comply with ANVISA and LGPD
+
+---
+
+## Future Vision (Beyond 90 Days)
+
+### 6 Months
+- 2,000+ daily active users
+- Node.js migration completed
+- Advanced intelligence (predictive insights)
+- R$15-20K MRR
+
+### 12 Months
+- 5,000+ daily active users
+- Proven retention (>40% D30, >25% D90)
+- Expand to LATAM (Argentina, Mexico)
+- R$50K+ MRR
+- Decision: Bootstrap profitable or raise seed
+
+---
+
+## Implementation Priorities
+
+### This Month (P0 - Must Have)
+1. Weight & symptom logging via WhatsApp
+2. Muscle Preservation Score algorithm
+3. Dashboard foundation with navigation
+4. Weight Progress Chart
+
+### Next Month (P1 - Should Have)
+5. Proactive protein alerts
+6. Side effect pattern detection
+7. Photo & voice meal logging
+8. Weekly summary cards
+
+### Month 3 (P2 - Nice to Have)
+9. Gamification (badges, streaks)
+10. Advanced visualizations
+11. PDF reports for doctors
+
+---
+
+## References
+
+### Strategic Documents
+- [Strategic Roadmap](./strategic-roadmap.md) - 90-day execution plan
+- [Competitive Research](./competitive-research.md) - US market analysis
+
+### Research Foundation
+- Protein requirements during weight loss (1.6g/kg)
 - GLP-1 side effect patterns and management
 - Weight loss velocity and muscle preservation
+- Behavioral psychology for habit formation
 
 ---
 
-## 📊 Appendix: User Flow Diagrams
+**End of Product Specification v2.0**
 
-### Daily User Journey
-```
-Morning (7am)
-  → Open app
-  → See Weekly Summary (if Monday)
-  → Check alerts ("Protein streak: 3 days!")
-  → Log breakfast
-
-Afternoon (1pm)
-  → Quick log lunch (voice or template)
-
-Evening (7pm)
-  → Log dinner
-  → See "You need 30g more protein"
-  → Tap suggestion: "Iogurte grego"
-  → Log snack
-
-Before bed (10pm)
-  → Check weight progress chart
-  → Feel accomplished seeing trend
-  → Set reminder for tomorrow's dose
-```
-
-### Titration Decision Journey
-```
-User Context: Been on 0.5mg for 6 weeks
-
-1. Opens TreatmentPanel
-2. Sees "Dose Analysis" card
-3. Reads:
-   - ✅ 6 weeks on current dose
-   - ✅ Weight stable last 2 weeks
-   - ✅ Side effects minimal
-   - 💡 "Consider discussing increase with doctor"
-4. Taps "Download Report"
-5. Gets PDF with charts to show doctor
-6. Books appointment
-7. Doctor increases to 1.0mg
-8. User updates dose in app
-9. App starts tracking "Week 1 on 1.0mg"
-```
-
----
-
-**End of Specification**
-
-*This is a living document. Update as we learn from users and iterate on features.*
+*This specification aligns with Strategic Roadmap v2.1 and embraces the four value propositions as our competitive foundation. Updated October 2025 to reflect WhatsApp-first approach and permanent results focus.*
