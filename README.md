@@ -1,287 +1,228 @@
-# Zempi Dashboard
+# Zempi Strategy Overview
 
-> Brazil's first WhatsApp-native GLP-1 companion with muscle preservation intelligence.
-
-**Tagline:** "Seu coach de GLP-1 no WhatsApp - Perca peso, preserve músculo."
+> Strategic documentation for Brazil's first WhatsApp-native GLP-1 companion with muscle preservation intelligence.
 
 ---
 
-## 🎯 What is Zempi?
+## Overview
 
-Zempi is a dual-interface GLP-1 companion app designed specifically for the Brazilian market:
+This repository contains the strategic planning and competitive research documentation for **Zempi** - a dual-interface GLP-1 companion app designed specifically for the Brazilian market that ensures weight loss results are **permanent** by protecting muscle mass and building lasting habits.
 
-- **WhatsApp Bot** (Primary Interface): Conversational AI for effortless daily tracking - meal logging, weight tracking, symptom logging, and Q&A - all via WhatsApp where Brazilians already spend 3+ hours/day.
-
-- **Dashboard** (This Repo): Visual analytics interface for charts, trends, muscle preservation score, and doctor reports.
-
-**Unique Value Propositions:**
-1. **WhatsApp-Native** - ZERO global competitors, 99% penetration in Brazil, 90% message read rate
-2. **Muscle Preservation Intelligence** - Quantified daily risk score (no competitor does this)
-3. **Conversational + Visual Harmony** - Log anywhere, analyze everywhere
+**What is Zempi?**
+- **WhatsApp Bot (Primary Interface):** Conversational AI for effortless daily tracking via WhatsApp
+- **Dashboard (Visual Interface):** Analytics, charts, trends, and doctor reports
+- **Intelligence Layer:** Shared muscle preservation algorithms and pattern detection
 
 ---
 
-## 🏗️ Architecture
+## Repository Purpose
 
-### Current Stack
+This repository serves as the central strategic planning hub for Zempi, containing:
 
-**Frontend:**
-- React 18 + TypeScript
-- TailwindCSS + shadcn/ui components
-- TanStack Query (React Query) for state management
-- Recharts for data visualization
-- Wouter for routing
+1. **Strategic Roadmap** - Comprehensive 90-day execution plan
+2. **Product Specification** - Detailed feature specs aligned with strategic vision
+3. **Competitive Research** - US market analysis and competitive landscape
+4. **Design Guidelines** - UX principles and design system
 
-**Backend:**
-- PostgreSQL via Supabase
-- Drizzle ORM for type-safe queries
-- Supabase Auth (linked to WhatsApp users)
-- Supabase Functions for intelligence layer (muscle score, pattern detection)
-
-**WhatsApp Bot:**
-- N8N workflows (MVP - rapid iteration)
-- OpenAI/Anthropic LLM for Portuguese NLP
-- Migration path to Node.js for scale (200+ DAU trigger)
-
-**Hosting:**
-- Dashboard: Vercel (auto-deploy from main branch)
-- Database: Supabase (managed PostgreSQL)
-- WhatsApp Bot: N8N Cloud → Node.js on Railway/Fly.io (future)
+**Note:** This repository contains documentation only. Implementation code lives in separate repositories.
 
 ---
 
-## 📚 Documentation
+## Core Value Propositions
 
-- **[Strategic Roadmap](./strategic-roadmap.md)** - 90-day execution plan (WhatsApp-first, parallel development)
-- **[Product Spec](./spec.md)** - Detailed feature specifications and user stories
-- **[Competitive Research](./competitive-research.md)** - US market analysis (benchmark, not competitors)
+### 1. PROTECT YOUR MUSCLE
+Quantify muscle preservation risk daily with research-backed protein targets and smart alerts - something no competitor does.
 
----
+### 2. BUILD LASTING HABITS
+Transform temporary medication into permanent results through behavioral coaching, gamification, and personal habit templates.
 
-## 🚀 Quick Start
+### 3. UNDERSTAND YOUR PATTERNS
+Empower users with pattern detection, anonymous benchmarking, and data-driven insights for doctor conversations.
 
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-- Supabase account (for database)
-
-### Installation
-
-```bash
-# Clone the repo
-git clone https://github.com/lucasmpcoelho/zempi-dashboard.git
-cd zempi-dashboard
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Add your Supabase credentials to .env
-
-# Run database migrations
-npm run db:migrate
-
-# Start development server
-npm run dev
-```
-
-The app will run at `http://localhost:5000`.
+### 4. FEEL SUPPORTED
+Combat loneliness through community insights and warm WhatsApp-native support in a privacy-first environment.
 
 ---
 
-## 🗂️ Project Structure
+## Key Documents
 
-```
-zempi-dashboard/
-├── client/                    # Frontend React app
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── charts/        # Weight chart, protein timeline
-│   │   │   ├── dashboards/    # Muscle preservation, side effects
-│   │   │   ├── panels/        # Overview, protein, treatment, wellness
-│   │   │   ├── cards/         # Weekly summary, meal suggestions
-│   │   │   ├── alerts/        # Smart alert system
-│   │   │   └── ui/            # shadcn/ui components
-│   │   ├── pages/             # Dashboard, Onboarding
-│   │   ├── lib/               # Utils, query client, meal database
-│   │   └── hooks/             # Custom React hooks
-├── server/                    # Backend Node.js
-│   ├── index.ts               # Express server
-│   ├── routes.ts              # API routes
-│   ├── db.ts                  # Database connection
-│   ├── migrations/            # Database migrations
-│   └── seed.ts                # Database seeding
-├── shared/                    # Shared types
-│   └── schema.ts              # Drizzle schema
-├── strategic-roadmap.md       # 90-day execution plan
-├── spec.md                    # Product specification
-├── competitive-research.md    # Market analysis
-└── README.md                  # This file
-```
+### [Strategic Roadmap](./strategic-roadmap.md)
+**90-Day Execution Plan** outlining:
+- Four value propositions in detail
+- Phased development approach (Weeks 1-12)
+- Success metrics aligned with value props
+- Technical architecture and intelligence layer
+- Go-to-market strategy for Brazil
+- Risks and mitigation strategies
+
+**Status:** In Execution (WhatsApp MVP Live)
 
 ---
 
-## 🎨 Key Features
+### [Product Specification](./spec.md)
+**Detailed Product Specs** covering:
+- Product vision and core promise
+- Dual-interface design (WhatsApp + Dashboard)
+- 90-day execution plan by phase
+- Success metrics by value proposition
+- Technical architecture and data models
+- UX principles and competitive advantages
 
-### Phase 1 (Weeks 1-2) - Foundation
-- ✅ WhatsApp bot with meal logging (LIVE via N8N)
-- ⏳ Weight & symptom logging via WhatsApp
-- ⏳ Muscle Preservation Score algorithm (Supabase function)
-- ⏳ Dashboard foundation with navigation
-- ⏳ Weight progress chart with healthy zone
-
-### Phase 2 (Weeks 3-4) - Intelligence
-- ⏳ Proactive protein alerts via WhatsApp
-- ⏳ Side effect pattern detection
-- ⏳ Side effect calendar (heatmap)
-- ⏳ Protein timeline visualization
-- ⏳ Weekly summary card
-
-### Phase 3 (Weeks 5-6) - Advanced Features
-- ⏳ Photo meal logging (Clarifai API)
-- ⏳ Voice note support (Whisper API)
-- ⏳ Gamification (badges, streaks)
-- ⏳ Symptom-aware meal suggestions
-
-### Phase 4 (Weeks 7-12) - Launch
-- ⏳ Two-way sync (WhatsApp ↔ Dashboard)
-- ⏳ PDF export for doctor visits
-- ⏳ Beta testing (30-50 users)
-- ⏳ Soft launch in Brazilian GLP-1 communities
+**Version:** 2.0 (Updated Oct 2025)
 
 ---
 
-## 🧪 Development Workflow
+### [Competitive Research](./competitive-research.md)
+**Market Analysis** including:
+- US GLP-1 app landscape analysis
+- Competitor feature comparison
+- Positioning opportunities for Brazil
+- Differentiation strategies
 
-### Branch Strategy
-- `main` - Production (protected, auto-deploys to Vercel)
-- `develop` - Staging (preview deployments)
-- `feature/*` - Individual features
-
-### Commit Convention
-```
-feat: new feature
-fix: bug fix
-docs: documentation changes
-refactor: code refactoring
-test: adding tests
-chore: maintenance tasks
-```
-
-Example: `feat(dashboard): add muscle score gauge`
-
-### Creating a Feature
-```bash
-# Start from develop
-git checkout develop
-git pull origin develop
-
-# Create feature branch
-git checkout -b feature/muscle-score-gauge
-
-# Make changes, commit
-git add .
-git commit -m "feat(dashboard): add muscle score gauge component"
-
-# Push and create PR
-git push origin feature/muscle-score-gauge
-```
+**Note:** US market is for benchmarking, not direct competition (different market)
 
 ---
 
-## 📊 Intelligence Layer
-
-The core intelligence (muscle score, pattern detection) lives in **Supabase Functions** (PostgreSQL):
-
-- `calculate_muscle_score(user_id)` → Returns JSON with score, status, factors
-- `detect_symptom_patterns(user_id)` → Returns JSON with patterns found
-- `generate_weekly_summary(user_id)` → Returns JSON with metrics & insights
-
-These functions are called by:
-- **WhatsApp Bot** (N8N) → Formats response conversationally
-- **Dashboard** (React) → Renders as charts/gauges
-
-**Why Supabase Functions?**
-- Logic in one place (no duplication)
-- Type-safe with Drizzle schema
-- Fast (runs in database, no round trips)
+### [Design Guidelines](./design_guidelines.md)
+**UX Principles** covering:
+- Visual design system (colors, typography, spacing)
+- WhatsApp tone guidelines (Brazilian Portuguese)
+- Accessibility standards
+- Mobile-first responsive design
 
 ---
 
-## 🌐 Deployment
+## Competitive Advantages
 
-### Vercel (Dashboard)
-Connected to GitHub - automatic deployments:
-- Push to `main` → Production deploy
-- Push to `develop` → Preview deploy
-- Pull requests → Preview deploy
+### WhatsApp-Native (12+ month moat)
+- **ZERO global competitors** with WhatsApp-first GLP-1 tracking
+- Perfect cultural fit: 99% penetration in Brazil, 3+ hours/day usage
+- 10x lower friction than traditional apps
+- Viral potential (share bot link, no download barrier)
 
-**Environment Variables (Vercel):**
-```
-VITE_SUPABASE_URL
-VITE_SUPABASE_ANON_KEY
-```
+### Muscle Preservation Intelligence (6-9 month moat)
+- No competitor quantifies muscle loss risk daily
+- Research-backed algorithm (1.6g/kg protein targets)
+- Addresses users' #1 fear
 
-### Supabase (Database)
-Managed PostgreSQL with:
-- Auto-backups (daily)
-- Real-time subscriptions
-- Edge functions for intelligence layer
+### Habit Formation Focus (6-9 month moat)
+- Personal habit template (unique approach)
+- Maintenance mode for post-medication
+- Behavioral psychology expertise
+
+### User Autonomy (12+ month moat)
+- Data ownership and transparency
+- Doctor reports (empower, not prescribe)
+- Privacy-first community insights
 
 ---
 
-## 🎯 Success Metrics (90 Days)
+## Current Status
 
-- 500+ WhatsApp bot users (daily conversations)
-- 50% D7 retention (WhatsApp-enabled)
-- 60% users hitting protein goals 4+ days/week
-- Dashboard accessed 2x/week for visualizations
+**Phase:** WhatsApp MVP Live + Building Dashboard
+
+**WhatsApp Bot (N8N):**
+- ✅ Onboarding flow
+- ✅ Conversational meal logging with nutrition analysis
+- ✅ Smart conversational AI with memory
+- ✅ Database logging to Supabase
+- ⏳ Weight & symptom logging (Week 1-2)
+- ⏳ Proactive alerts (Week 3-4)
+
+**Dashboard:**
+- ⏳ Foundation rebuild (Week 1-2)
+- ⏳ Core visualizations (Week 3-4)
+- ⏳ Gamification & polish (Week 5-6)
+
+**Intelligence Layer:**
+- ⏳ Muscle Preservation Score algorithm (Week 1-2)
+- ⏳ Pattern detection engine (Week 3-4)
+- ⏳ Advanced insights (Week 5-6)
+
+---
+
+## Success Metrics (90 Days)
+
+### Value Proposition Alignment
+
+**VP1: PROTECT YOUR MUSCLE**
+- 60%+ users hit protein goals 4+ days/week
+- 70%+ achieve 7-day protein streak at least once
+- Muscle score viewed 3+/week by 80%+ users
+
+**VP2: BUILD LASTING HABITS**
+- 50%+ create personal habit template
+- 60%+ complete weekly reflection prompts 2+ times
+- 70%+ maintain logging consistency (4+ days/week)
+
+**VP3: UNDERSTAND YOUR PATTERNS**
+- 30%+ view community insights panel weekly
+- 30%+ generate PDF report for doctor visit
+- Pattern insights surfaced for 80%+ users
+
+**VP4: FEEL SUPPORTED**
+- NPS score >35
+- "Feel supported" survey score >4/5
 - 30% viral coefficient (share bot with friends)
+
+**Overall Business Metrics:**
+- 500+ active users conversing with WhatsApp bot daily
+- 50%+ D7 retention rate
+- Dashboard accessed 1-2x/week
 - R$2,500 MRR (85 paid users at R$29.90/month)
 
 ---
 
-## 🚧 Roadmap
+## Strategic Positioning
 
-See **[strategic-roadmap.md](./strategic-roadmap.md)** for detailed 90-day execution plan.
+**For** GLP-1 users in Brazil who fear losing muscle mass, dread regaining weight after stopping medication, and feel alone in their health journey,
 
-**High-level milestones:**
-- **Week 2:** WhatsApp logging complete + Dashboard foundation + Muscle score live
-- **Week 4:** Proactive alerts + Pattern detection + Core visualizations
-- **Week 6:** Photo/voice logging + Polish + Advanced insights
-- **Week 12:** Beta tested + Soft launched + First 50+ users
+**Zempi** is a WhatsApp-native AI coach
 
----
+**That** ensures your weight loss is permanent by protecting your muscle with daily risk scoring, building lasting habits through behavioral coaching, helping you understand your body's unique patterns, and providing supportive community insights—all delivered in WhatsApp where you already spend 3+ hours/day.
 
-## 🤝 Contributing
-
-This is currently a solo project, but contributions may be welcome in the future. For now, refer to **[strategic-roadmap.md](./strategic-roadmap.md)** for development priorities.
+**Taglines:**
+- Primary: **"Perca gordura, não músculo. Resultados que duram para sempre."**
+  - (Lose fat, not muscle. Results that last forever.)
+- Secondary: **"Seu coach de GLP-1 no WhatsApp - Resultados permanentes, não temporários."**
+  - (Your GLP-1 coach on WhatsApp - Permanent results, not temporary.)
 
 ---
 
-## 📝 License
+## Related Repositories
 
-Proprietary - All rights reserved
+**Implementation Code** (separate repositories):
+- WhatsApp Bot implementation
+- Dashboard React app
+- Backend APIs and intelligence layer
 
----
-
-## 🔗 Related Repositories
-
-- **[zempi](https://github.com/lucasmpcoelho/zempi)** - Landing page (marketing site)
-- **N8N Workflows** - WhatsApp bot logic (hosted on N8N Cloud, exported as JSON backup)
+**Note:** This repository is documentation-only for strategic planning and alignment.
 
 ---
 
-## 📧 Contact
+## Market Context
+
+**Target Market:** Brazil
+- GLP-1 users: ~500K-1M (growing rapidly)
+- WhatsApp penetration: 99%
+- Average usage: 3+ hours/day
+- Cultural fit: Collectivist, community-oriented, WhatsApp for everything
+
+**Why Brazil First:**
+- Less competitive than US (fewer localized apps)
+- WhatsApp dominance creates unique opportunity
+- Growing GLP-1 market with unmet needs
+- Cultural preference for warm, supportive coaching
+
+---
+
+## Contact
 
 **Lucas M P Coelho**
 - GitHub: [@lucasmpcoelho](https://github.com/lucasmpcoelho)
-- Email: [your-email]
 
 ---
 
-**Built with ❤️ in Brazil for the Brazilian GLP-1 community**
+**Built with care for the Brazilian GLP-1 community**
 
 *Last updated: October 2025*
-
